@@ -1,7 +1,7 @@
 // JavaScript Document
 
 function ajax_request(bool,pagename,data_parameters,functionname){
-	var data_url = "http://192.168.1.102:1837/"+pagename;
+	var data_url = "http://50.116.21.72:1837/"+pagename;
 	var http_request = new XMLHttpRequest();
 	try{
 	   http_request = new XMLHttpRequest();
