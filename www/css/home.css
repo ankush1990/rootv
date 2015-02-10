@@ -1,0 +1,75 @@
+@charset "utf-8";
+/* CSS Document */
+
+.up{width:40px; height:35px; position:absolute; right:30px; top:31px; background-color:#3CF; z-index:1;}
+
+.down{width:40px; height:35px; position:absolute; top:72px; right:30px;z-index:1;}
+
+.btn  { border-radius: 0;}
+.btn-default {
+  background-color: #FFF;
+  font-weight:bold;
+}
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active,
+.btn-default.active {
+  background-color: #134562;
+  border-color: #2f9264;
+  color:#FFF;
+  
+}
+.btn-default.disabled:hover,
+.btn-default.disabled:focus,
+.btn-default.disabled:active,
+.btn-default.disabled.active,
+.btn-default[disabled]:hover,
+.btn-default[disabled]:focus,
+.btn-default[disabled]:active,
+.btn-default[disabled].active,
+fieldset[disabled] .btn-default:hover,
+fieldset[disabled] .btn-default:focus,
+fieldset[disabled] .btn-default:active,
+fieldset[disabled] .btn-default.active {
+  background-color: #3BB97E;
+  border-color: #3BB97E;
+  color:#FFF;
+}
+
+#low{height:100px; width:100px;  background-image:url(../images/low_down.png);  border:none; outline:none;  background-size:106% 110%;}
+<!--#low:hover{cursor:pointer; background-image:url(images/low_up.png);}-->
+
+#medium{height:100px; width:100px;  background-image:url(../images/medium_down.png);  border:none; outline:none;  background-size:106% 110%;}
+<!--#medium:hover{cursor:pointer; background-image:url(images/medium_up.png);}-->
+
+#high{height:100px; width:100px ;  background-image:url(../images/hight_down.png);  border:none; outline:none;  background-size:106% 110%;}
+<!--#high:hover{cursor:pointer; background-image:url(images/high_up.png);}-->
+
+#offfan{height:100px; width:100px;  background-image:url(../images/off_down.png);  border:none; outline:none;  background-size:106% 110%;}
+<!--#offfan:hover{cursor:pointer; background-image:url(images/off_up.png);}-->
+
+#heating{height:100px; width:100px;  background-image:url(../images/heating_down.png);  border:none; outline:none;  background-size:106% 110%;}
+<!--#heating:hover{cursor:pointer; background-image:url(images/heating_up.png);}-->
+
+#cooling{height:100px; width:100px;  background-image:url(../images/cooling_down.png);  border:none; outline:none;  background-size:106% 110%;}
+<!--#cooling:hover{cursor:pointer; background-image:url(images/cooling_up.png);}-->
+
+#auto{height:100px; width:100px ;  background-image:url(../images/auto_down.png);  border:none; outline:none;  background-size:106% 110%;}
+<!--#auto:hover{cursor:pointer; background-image:url(images/auto_up.png);}-->
+
+#systemoff{height:100px; width:100px;  background-image:url(../images/off_down.png);  border:none; outline:none;  background-size:106% 110%; }
+
+#weekday{height:100px; width:100px; background-image:url(../images/weekdays_down.png);  border:none; outline:none;  background-size:106% 110%; margin:0px 20px 30px 20px;}
+<!--#weekday:hover{cursor:pointer; background-image:url(images/weekdays_up.png);}-->
+
+#vacation{height:100px; width:100px; background-image:url(../images/vacation_down.png);  border:none; outline:none;  background-size:106% 110%; margin:0px 20px 30px 20px;}
+<!--#vacation:hover{cursor:pointer; background-image:url(images/vacation_up.png);}-->
+
+
+#custom{height:100px; width:100px; background-image:url(../images/custom_down.png);  border:none; outline:none;  background-size:106% 110%; margin:0px 20px 30px 20px;}
+<!--#custom:hover{cursor:pointer; background-image:url(images/custom_up.png);}-->
+
+#off{height:100px; width:100px; background-image:url(../images/off_down.png);  border:none; outline:none;  background-size:106% 110%; margin:0px 20px 30px 20px;}
+#off:hover{cursor:pointer; background-image:url(images/off-up.png);}
+
+

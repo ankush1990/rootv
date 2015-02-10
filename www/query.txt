@@ -1,0 +1,18 @@
+insert into master.mtr$valid_thermostat values('ABC-12345');
+
+
+insert into setup.stp$server_loc(server_loc_id,server_loc_name) values(1,'linux');
+
+
+truncate setup."stp$user_map_thermostat";
+truncate master."mtr$hvac";
+truncate master."mtr$learning";
+truncate master."mtr$location";
+truncate master."mtr$schedule";
+truncate master."mtr$sensor";
+truncate master."mtr$thermostat";
+truncate master."mtr$thermostat";
+truncate master."mtr$valid_thermostat";
+truncate setup."stp$org";
+truncate setup."stp$sec_user";
+truncate setup."stp$user_map_loc";

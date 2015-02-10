@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<link rel="icon" href="images/favicon.png" />
+<link href='css/config.css' rel='stylesheet'>
+<link href='css/simple-sidebar.css' rel='stylesheet'>
+
+<script src="js/ajax_request.js"></script>
+
+<script>
+
+
+
+function loadthermostat_after_refresh(bool,response){
+	if(bool){
+		pagename = "get_location";
+		var data_parameters = "slocid="+1+ "&orgid="+1+ "&locationname="+"";
+		//var jsontext = '{"slocid":1,"orgid":1,"locationname":" "}';
+		//var data_parameters = JSON.parse(jsontext);
+		
+		ajax_request(true,pagename,data_parameters,loadthermostat_after_refresh);
+	}else{
+		var obj = JSON.stringify(response);
+		var str = "";
+		for(var i = 0; i < obj.length; i++){
+			str += '<li onclick="changethermostat(event);">\<a>'+obj[i].loc_id+'</a>\</li>';
+		}
+		document.getElementById("thermostat_value_inner").innerHTML = str;
+		//document.getElementById("thermostat_value").innerHTML = id;
+	}
+}
+	
+
+</script>
+
+
+</head>
+
+<body>
+<div id="thermostat_value_inner">
+</div>
+
+</body>
+<script>
+
+
+loadthermostat_after_refresh('true','ok');
+</script>
+</html>

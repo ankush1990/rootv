@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script>
+
+var global_schedule = "";
+
+function saveschedule(bool,reponse){
+	if(bool){
+		if(reponse != ""){
+			var validatecheck = document.getElementById("schedulenamevalidatecheck").value;
+			if(validatecheck.trim() != "no"){
+				var data_url = "saveandfetch.php?";
+				var data_parameters = "schedulename="+reponse;
+				ajax_request(true,data_url,data_parameters,saveschedule);
+			}
+		}else{
+			document.getElementById("schedulenameerror").style.display = 'block';
+			document.getElementById("schedulenameerrorheader").className = 'form-group has-feedback has-error';
+		}
+	} else {
+		document.getElementById("schedulenamesuccessicon").style.display = 'none';
+		document.getElementById("schedulename").value = "";
+		document.getElementById("schedulealertsuccess").style.display = "block";
+		//document.getElementById("scheduledataload").innerHTML = reponse;
+		$(".alert").delay(200).addClass("in").fadeOut(2500);
+		setTimeout(function(){reloadpage()},2500);
+	}
+}
+
+
+function validatetimerange(bool,reponse){
+	
+	var schedule_starttime = document.getElementById("start1").value;
+	var schedule_endtime = document.getElementById("stop1").value;
+	var lth = document.getElementById("lowthreshold").value;
+	var hth = document.getElementById("highthreshold").value;
+	
+	document.getElementById("start").style.border = "none";
+	document.getElementById("stop").style.border = "none";
+	document.getElementById("lowthreshold").style.border = "1px solid #ccc";
+	document.getElementById("highthreshold").style.border = "1px solid #ccc";
+	var math=/^[0-9]+$/.test(lth);
+	var math1=/^[0-9]+$/.test(hth);
+	
+	if(schedule_starttime == "" && schedule_endtime == "" && lth == "" && hth == ""){
+		document.getElementById("start").style.border = "1px solid #C12E2A";
+		document.getElementById("stop").style.border = "1px solid #C12E2A";
+		document.getElementById("lowthreshold").style.border = "1px solid #C12E2A";
+		document.getElementById("highthreshold").style.border = "1px solid #C12E2A";
+	}
+	else if(schedule_starttime == ""){
+		document.getElementById("start").style.border = "1px solid #C12E2A";
+	}
+	else if(schedule_endtime == ""){
+		document.getElementById("stop").style.border = "1px solid #C12E2A";
+	}
+	else if(lth == ""){
+		document.getElementById("lowthreshold").style.border = "1px solid #C12E2A";
+	}
+	else if(hth == ""){
+		document.getElementById("highthreshold").style.border = "1px solid #C12E2A";
+	}
+	else if(schedule_starttime > schedule_endtime){
+		$('#timegrateralert').modal({
+			keyboard: true 
+		});
+	}
+	else if(lth > hth){
+		$('#thresholdgrateralert').modal({
+			keyboard: true 
+		});
+	}
+	else if(!math){
+		document.getElementById("lowthreshold").style.border = "1px solid #C12E2A";
+	}
+	else if(!math1){
+		document.getElementById("highthreshold").style.border = "1px solid #C12E2A";
+	}
+	else{
+		var scheduledetail_id = document.getElementById("scheduledetail_id").value;
+		var endtime = document.getElementById("stop1").value;
+		
+		var http_request = new XMLHttpRequest();
+				try{
+				   http_request = new XMLHttpRequest();
+				}catch (e){
+				   try{
+					  http_request = new ActiveXObject("Msxml2.XMLHTTP");
+				   }catch (e) {
+					  try{
+						 http_request = new ActiveXObject("Microsoft.XMLHTTP");
+					  }catch (e){
+						 // Something went wrong
+						 alert("Your browser broke!");
+						 return false;
+					  }
+				   }
+				}
+				http_request.onreadystatechange  = function(){
+					if (http_request.readyState == 4)
+					{
+						var x = http_request.responseText.trim();
+						
+						if(x == "0"){
+							$('#timenotinrange').modal({
+								keyboard: true 
+							});
+						}
+						else{
+							savescheduledetatil(true,reponse);
+						}
+					}
+				  }
+			http_request.open("GET","gethint.php?checktimerange_id="+scheduledetail_id+'&starttime='+reponse+'&endtime='+endtime,true);
+			http_request.send();
+	}
+}
+
+var global_schedule_id = "";
+function savescheduledetatil(bool,reponse){
+	if(bool){
+		if(reponse != ""){
+			var lowt = document.getElementById("lowthreshold").value;
+			var hight = document.getElementById("highthreshold").value;
+			var endtime = document.getElementById("stop1").value;
+			var scheduledetail_id = document.getElementById("scheduledetail_id").value;
+			global_schedule_id = scheduledetail_id;
+			var data_url = "saveandfetch.php?";
+			var data_parameters = "scheduledetail_id="+scheduledetail_id+'&lowt='+lowt+'&hight='+hight+'&starttime='+reponse+'&endtime='+endtime;
+			ajax_request(true,data_url,data_parameters,savescheduledetatil);
+		}else{
+			document.getElementById("schedulenameerror").style.display = 'block';
+			document.getElementById("schedulenameerrorheader").className = 'form-group has-feedback has-error';
+		}
+	} else {
+		document.getElementById("start1").value = "";
+		document.getElementById("stop1").value = "";
+		document.getElementById("lowthreshold").value = "";
+		document.getElementById("highthreshold").value = "";
+		$('#scheduledtsucess').modal({
+			keyboard: true 
+		});
+		loadscheduledetail(true,global_schedule_id);
+	}
+}
+
+
+function reloadpage(){
+	$("#setuppageload").load("schedule.php");
+}
+
+function checkschedulename(bool,reponse){
+	document.getElementById("schedulenameerror").style.display = 'none';
+	document.getElementById("schedulenamesuccessicon").style.display = 'none';
+	document.getElementById("schedulenamewarningicon").style.display = 'none';
+	document.getElementById("schedulenamewarning").style.display = 'none';
+	document.getElementById("schedulenameerrorheader").className = 'form-group has-feedback';
+	
+	if(reponse.length > 0){
+		if(bool){
+			var data_url = "gethint.php?";
+			var data_parameters = "schedulenamecheck="+reponse;
+			ajax_request(true,data_url,data_parameters,checkschedulename);
+			
+		}else{
+			document.getElementById("schedulenamevalidatecheck").value = reponse.trim();
+				if(reponse.trim() == "no"){
+					document.getElementById("schedulenamewarning").style.display = 'block';
+					document.getElementById("schedulenamewarningicon").style.display = 'block';
+					document.getElementById("schedulenameerrorheader").className = 'form-group has-feedback has-warning';
+						
+				}else{
+					document.getElementById("schedulenamesuccessicon").style.display = 'block';
+					document.getElementById("schedulenameerrorheader").className = 'form-group has-feedback has-success ';
+				}
+		}
+	}
+}
+
+function searchschedule(bool,reponse){
+	if(bool){
+		var data_url = "saveandfetch.php?";
+		var data_parameters = "searchschedule="+reponse;
+		ajax_request(true,data_url,data_parameters,searchschedule);
+	}else{
+		document.getElementById("scheduledataload").innerHTML = reponse;
+	}
+}
+
+
+function hideschedulediv(){
+	document.getElementById("adddetailschedulediv1").style.display = 'none';
+	document.getElementById("addschedulediv1").style.display = 'block';
+}
+
+function showschedulediv(scheduleid,schedulename){
+	document.getElementById("start").style.border = "none";
+	document.getElementById("stop").style.border = "none";
+	document.getElementById("lowthreshold").style.border = "1px solid #ccc";
+	document.getElementById("highthreshold").style.border = "1px solid #ccc";
+	
+	document.getElementById("start").value = "";
+	document.getElementById("stop").value = "";
+	document.getElementById("lowthreshold").value = "";
+	document.getElementById("highthreshold").value = "";
+	
+	
+	document.getElementById("scheduledetail_id").value = scheduleid;
+	document.getElementById("addschedulediv1").style.display = 'none';
+	document.getElementById("adddetailschedulediv1").style.display = 'block';
+	document.getElementById("scheduledetailname").value = schedulename;
+	
+	loadscheduledetail(true,scheduleid);
+}
+
+
+function loadscheduledetail(bool,reponse){
+	if(bool){
+		var data_url = "saveandfetch.php?";
+		var data_parameters = "loadscheduledetailid="+reponse;
+		ajax_request(true,data_url,data_parameters,loadscheduledetail);
+	}else{
+		document.getElementById("scheduledetaildataload").innerHTML = reponse;
+	}
+}
+
+function editscheduledetail(scheduleid,seqno,stime,etime,lth,hth){
+	document.getElementById("adddetailschedulediv").style.display = 'none';
+	document.getElementById("editdetailschedulediv1").style.display = 'block';
+	
+	document.getElementById("editseq_no").value = seqno;
+	document.getElementById("editscheduledetailname").value = document.getElementById("scheduledetailname").value;
+	document.getElementById("editstart1").value = stime;
+	document.getElementById("editstop1").value = etime;
+	document.getElementById("editlowthreshold").value = lth;
+	document.getElementById("edithighthreshold").value = hth;
+}
+
+function editscheduledetailhide(){
+	document.getElementById("adddetailschedulediv").style.display = 'block';
+	document.getElementById("editdetailschedulediv1").style.display = 'none';
+}
+
+
+function editvalidatetimerange(bool,reponse){
+	
+	document.getElementById("start").style.border = "none";
+	document.getElementById("stop").style.border = "none";
+	document.getElementById("lowthreshold").style.border = "1px solid #ccc";
+	document.getElementById("highthreshold").style.border = "1px solid #ccc";
+	
+	var edit_schedule_starttime = document.getElementById("editstart1").value;
+	var edit_schedule_endtime = document.getElementById("editstop1").value;
+	var edit_lth = document.getElementById("editlowthreshold").value;
+	var edit_hth = document.getElementById("edithighthreshold").value;
+	
+	var seq_no = document.getElementById("editseq_no").value ;
+	document.getElementById("editstart").style.border = "none";
+	document.getElementById("editstop").style.border = "none";
+	document.getElementById("editlowthreshold").style.border = "1px solid #ccc";
+	document.getElementById("edithighthreshold").style.border = "1px solid #ccc";
+	var math=/^[0-9]+$/.test(edit_lth);
+	var math1=/^[0-9]+$/.test(edit_hth);
+	
+	if(edit_schedule_starttime == "" && edit_schedule_endtime == "" && edit_lth == "" && edit_hth == ""){
+		document.getElementById("editstart").style.border = "1px solid #C12E2A";
+		document.getElementById("editstop").style.border = "1px solid #C12E2A";
+		document.getElementById("editlowthreshold").style.border = "1px solid #C12E2A";
+		document.getElementById("edithighthreshold").style.border = "1px solid #C12E2A";
+	}
+	else if(edit_schedule_starttime == ""){
+		document.getElementById("editstart").style.border = "1px solid #C12E2A";
+	}
+	else if(edit_schedule_endtime == ""){
+		document.getElementById("editstop").style.border = "1px solid #C12E2A";
+	}
+	else if(edit_lth == ""){
+		document.getElementById("editlowthreshold").style.border = "1px solid #C12E2A";
+	}
+	else if(edit_hth == ""){
+		document.getElementById("edithighthreshold").style.border = "1px solid #C12E2A";
+	}
+	else if(edit_schedule_starttime > edit_schedule_endtime){
+		$('#timegrateralert').modal({
+			keyboard: true 
+		});
+	}
+	else if(edit_lth > edit_hth){
+		$('#thresholdgrateralert').modal({
+			keyboard: true 
+		});
+	}
+	else if(!math){
+		document.getElementById("editlowthreshold").style.border = "1px solid #C12E2A";
+	}
+	else if(!math1){
+		document.getElementById("edithighthreshold").style.border = "1px solid #C12E2A";
+	}
+	else{
+		var scheduledetail_id = document.getElementById("scheduledetail_id").value;
+		var endtime = document.getElementById("editstop1").value;
+		
+		var http_request = new XMLHttpRequest();
+				try{
+				   http_request = new XMLHttpRequest();
+				}catch (e){
+				   try{
+					  http_request = new ActiveXObject("Msxml2.XMLHTTP");
+				   }catch (e) {
+					  try{
+						 http_request = new ActiveXObject("Microsoft.XMLHTTP");
+					  }catch (e){
+						 // Something went wrong
+						 alert("Your browser broke!");
+						 return false;
+					  }
+				   }
+				}
+				http_request.onreadystatechange  = function(){
+					if (http_request.readyState == 4)
+					{
+						var x = http_request.responseText.trim();
+						
+						if(x == "0"){
+							$('#timenotinrange').modal({
+								keyboard: true 
+							});
+						}
+						else{
+							editsavescheduledetatil(true,reponse);
+						}
+					}
+				  }
+			http_request.open("GET","gethint.php?editchecktimerange_id="+scheduledetail_id+'&starttime='+reponse+'&endtime='+endtime+'&seq_no='+seq_no,true);seq_no
+			http_request.send();
+	}
+}
+
+
+function editsavescheduledetatil(bool,reponse){
+	if(bool){
+		if(reponse != ""){
+			var lowt = document.getElementById("editlowthreshold").value;
+			var hight = document.getElementById("edithighthreshold").value;
+			var endtime = document.getElementById("editstop1").value;
+			var seq_no = document.getElementById("editseq_no").value;
+			var scheduledetail_id = document.getElementById("scheduledetail_id").value;
+			global_schedule_id = scheduledetail_id;
+			var data_url = "saveandfetch.php?";
+			var data_parameters = "editscheduledetail_id="+scheduledetail_id+'&lowt='+lowt+'&hight='+hight+'&starttime='+reponse+'&endtime='+endtime+'&editseq_no='+seq_no;
+			ajax_request(true,data_url,data_parameters,editsavescheduledetatil);
+		}else{
+			document.getElementById("schedulenameerror").style.display = 'block';
+			document.getElementById("schedulenameerrorheader").className = 'form-group has-feedback has-error';
+		}
+	} else {
+		$('#scheduledtupdatesucess').modal({
+			keyboard: true 
+		});
+		document.getElementById("adddetailschedulediv").style.display = 'block';
+		document.getElementById("editdetailschedulediv1").style.display = 'none';
+		loadscheduledetail(true,global_schedule_id);
+	}
+}
+
+
+var fourschedule_val1 = "";
+var fourschedule_val2 = "";
+var fourschedule_val3 = "";
+var fourschedule_val4 = "";
+
+function showfourschedule(){
+	fourschedule_val1 = "";
+	fourschedule_val2 = "";
+	fourschedule_val3 = "";
+	fourschedule_val4 = "";
+	document.getElementById("ass_schedule_one").value = "";
+	document.getElementById("ass_schedule_two").value = "";
+	document.getElementById("ass_schedule_three").value = "";
+	document.getElementById("ass_schedule_four").value = "";
+	
+	$('#fourschedulealert').modal({
+			keyboard: true 
+		});
+}
+
+
+function fourschedulecheck1(bool,reponse){
+	if(bool){
+		document.getElementById("ass_schedule_two").disabled = true;
+		document.getElementById("ass_schedule_three").disabled = true;
+		document.getElementById("ass_schedule_four").disabled = true;
+		document.getElementById("setfourschedulebutton").disabled = true;
+		if(reponse != ""){
+			fourschedule_val1 = reponse;
+			var data_url = "gethint2.php?";
+			var data_parameters = "firstvalue="+reponse;
+			ajax_request(true,data_url,data_parameters,fourschedulecheck1);
+		}
+	}else{
+		if(reponse != ""){
+			document.getElementById("ass_schedule_two").disabled = false;
+			document.getElementById("ass_schedule_two").innerHTML = reponse;
+			document.getElementById("setfourschedulebutton").disabled = false;
+		}
+	}
+}
+</script>
+</head>
+<body>
+<div class="container">
+    <div class="row"><br/>
+    	<div id="addschedulediv1"> 
+        <div id="addschedulediv" class="col-sm-3" style="border:1px solid #CCC;">
+        	<h4><b>Add New Schedule</b></h4><hr>
+            	<div id="schedulealertsuccess" class="span4 pull-center" style="display:none;">
+        			<div class="alert alert-success fade">
+        			<strong>Success! </strong> Schedule added successfully.
+    				</div>
+                </div>
+            	<div id="schedulenameerrorheader" class="form-group has-feedback">
+                
+                 <label for="inputError2">Schedule Name</label>
+                     <input type="text" class="form-control" id="schedulename" onKeyUp="checkschedulename(true,this.value)">
+                     <input type="hidden" id="schedulenamevalidatecheck" \>
+                     <span id="schedulenameerror" style="display:none;" class="help-block">Please fill out this field</span>
+                     <span id="schedulenamesuccessicon" style="display:none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                     <span id="schedulenamewarningicon" style="display:none" class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+                     <span id="schedulenamewarning" style="display:none;" class="help-block">Schedule name already exists</span>
+				</div>
+				<button onClick="saveschedule(true,schedulename.value)" type="button" class="all-btn-custom btn-sm btn-block">
+          			<span class="glyphicon glyphicon-plus"></span> ADD
+        		</button>
+         		<br />
+        </div>
+        
+        
+        
+ 
+        <div  id="loadscheduledetaildata" class="col-sm-9">
+        <table class="table table-hover">
+           <thead>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>Schedule List</h4>
+                        <div class="btn-group pull-right">
+                             <div class="form-group has-feedback">
+                                <input type="text" class="form-control" id="inputSuccess2" onKeyUp="searchschedule(true,this.value)" placeholder="Enter Schedule Name"/>
+                                <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              <tr>
+                 <th>Sr No.</th><th>Schedule Name</th><th>Created On</th><th>Action</th>
+              </tr>
+           </thead>
+           <tbody id="scheduledataload">
+          		
+           </tbody>
+         </table>   
+        </div>
+        
+        
+        </div>
+
+
+
+
+
+
+<!-- ===============Time Grater Alert============-->
+<div id="timegrateralert" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal-header-info" style="background-color:#D43F3A; color:#FFF">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Warning</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                <div class="modal-body">
+                    <div class="container">
+     					Start time should be less than End time.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+                </form>
+            </div>
+        </div>
+</div>
+<!-- ===============Time Grater Alert============-->
+
+
+<!-- ===============Same Schedule selected in Four============-->
+<div id="sameSchedulealert" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal-header-info" style="background-color:#D43F3A; color:#FFF">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Warning</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                <div class="modal-body">
+                    <div class="container">
+     					Schedule already selected.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+                </form>
+            </div>
+        </div>
+</div>
+<!-- ===============Same Schedule selected in Four============-->
+
+<!-- ===============Threshhold Grater Alert============-->
+<div id="thresholdgrateralert" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal-header-info" style="background-color:#D43F3A; color:#FFF">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Warning</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                <div class="modal-body">
+                    <div class="container">
+     					Low threshold should be less than High threshold.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+                </form>
+            </div>
+        </div>
+</div>
+<!-- ===============Threshhold Grater Alert============-->
+
+
+<!-- ===============Time Range Alert============-->
+<div id="timenotinrange" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal-header-info" style="background-color:#D43F3A; color:#FFF">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Warning</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                <div class="modal-body">
+                    <div class="container">
+     					Time Range should not between the another Time Range.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+                </form>
+            </div>
+        </div>
+</div>
+<!-- ===============Time Range Alert============-->
+
+
+<!-- ===============Schedule Detail Success============-->
+<div id="scheduledtsucess" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal-header-info" style="background-color:#0F9D58; color:#FFF">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Success</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                <div class="modal-body">
+                    <div class="container">
+     					Detail added successfully.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+                </form>
+            </div>
+        </div>
+</div>
+<!-- ===============Schedule Detail Success============-->
+
+
+<!-- ===============Update Detail Success============-->
+<div id="scheduledtupdatesucess" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal-header-info" style="background-color:#0F9D58; color:#FFF">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Success</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                <div class="modal-body">
+                    <div class="container">
+     					Detail updated successfully.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+                </form>
+            </div>
+        </div>
+</div>
+<!-- ===============Update Detail Success============-->
+
+
+<!--===================Edit Detail In Schedule================================ -->      
+		<div id="editdetailschedulediv1" style="display:none;">
+        <div id="editdetailschedulediv" class="col-sm-3" style="border:1px solid #CCC;">
+        	<h4><b>Edit Schedule Detail</b></h4><hr>
+            	<div id="scheduledetailalertsuccess" class="span4 pull-center" style="display:none;">
+        			<div class="alert1 alert-success fade">
+        			<strong>Success! </strong> Detail added successfully.
+    				</div>
+                </div>
+            	<div id="editschedulenameerrorheader" class="form-group has-feedback">
+                	<input type="hidden" id="editscheduledetail_id">
+                    <input type="hidden" id="editseq_no">
+                	<input type="text" class="form-control" id="editscheduledetailname" disabled onKeyUp="checkschedulename(true,this.value)">
+                    <h5><b>Time Range</b></h5>
+                    <span>Start:</span>
+                        <div class='input-group date' id='editstart'>
+                                <input type='text' class="form-control" id="editstart1" data-format="HH:mm:ss"/>
+                                <span class="input-group-addon input-group-addon-withradius" style="border-radius:none"><span class="glyphicon glyphicon-time"></span>
+								</span>
+                        </div>
+                        <span>End:</span>
+                        <div class='input-group date' id='editstop'>
+                                <input type='text' class="form-control" id="editstop1" data-format="HH:mm:ss"/>
+                                <span class="input-group-addon input-group-addon-withradius"><span class="glyphicon glyphicon-time"></span>
+                                </span>
+                    </div><br /> 
+                     <label for="inputError2">Low Threshold</label>
+                     <input type="text" class="form-control" id="editlowthreshold">
+                     <label for="inputError2">High Threshold</label>
+                     <input type="text" class="form-control" id="edithighthreshold">
+				</div>
+                <div class="form-group">         
+          			<button  class="btn-exit" style="width:49%" onClick="editscheduledetailhide()">Back</button>
+                    <button id="editgroupupdate" class="btn-adddetail" style="width:49%" onClick="editvalidatetimerange(true,editstart1.value)">Update</button>
+          		</div>
+				
+        </div>
+        
+       	</div>
+<!--===================Edit Detail In Schedule================================ -->    
+
+        
+<!--===================Add Detail In Schedule================================ -->
+		<div id="adddetailschedulediv1" style="display:none;">
+        <div id="adddetailschedulediv" class="col-sm-3" style="border:1px solid #CCC;">
+        	<h4><b>Add Schedule Detail</b></h4><hr>
+            	<div id="scheduledetailalertsuccess" class="span4 pull-center" style="display:none;">
+        			<div class="alert1 alert-success fade">
+        			<strong>Success! </strong> Detail added successfully.
+    				</div>
+                </div>
+            	<div id="schedulenameerrorheader" class="form-group has-feedback">
+                	<input type="hidden" id="scheduledetail_id">
+                	<input type="text" class="form-control" id="scheduledetailname" disabled onKeyUp="checkschedulename(true,this.value)">
+                    <h5><b>Time Range</b></h5>
+                    <span>Start:</span>
+                        <div class='input-group date' id='start'>
+                                <input type='text' class="form-control" id="start1" data-format="HH:mm:ss"/>
+                                <span class="input-group-addon input-group-addon-withradius" style="border-radius:none"><span class="glyphicon glyphicon-time"></span>
+								</span>
+                        </div>
+                        <span>End:</span>
+                        <div class='input-group date' id='stop'>
+                                <input type='text' class="form-control" id="stop1" data-format="HH:mm:ss"/>
+                                <span class="input-group-addon input-group-addon-withradius"><span class="glyphicon glyphicon-time"></span>
+                                </span>
+                    </div><br /> 
+                     <label for="inputError2">Low Threshold</label>
+                     <input type="text" class="form-control" id="lowthreshold">
+                     <label for="inputError2">High Threshold</label>
+                     <input type="text" class="form-control" id="highthreshold">
+				</div>
+                <div class="form-group">        
+          			<button  class="btn-exit" style="width:49%" onClick="hideschedulediv()">Exit</button>
+                    <button id="editgroupupdate" class="btn-adddetail" style="width:49%" onClick="validatetimerange(true,start1.value)">Add Detail</button>
+          		</div>
+				
+        </div>
+        
+        
+        <div  id="loadgroupdata" class="col-sm-9">
+        <table class="table table-hover">
+           <thead>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>Schedule Detail List</h4>
+                        <div class="btn-group pull-right">
+                        </div>
+                    </div>
+                </div>
+              <tr>
+                 <th>Sr No.</th><th>Start Time</th><th>End Time</th><th>Low Threshold</th><th>High Threshold</th><th>Action</th>
+              </tr>
+           </thead>
+           <tbody id="scheduledetaildataload">
+          		
+           </tbody>
+         </table>   
+        </div>
+        </div>
+<!--===================Add Detail In Schedule================================ -->      
+     
+    </div>
+</div>
+
+<script type="text/javascript">
+ // $(function () {
+					//$('#start').datetimepicker({ pickDate: false });
+					//$('#stop').datetimepicker({ pickDate: false });
+					
+					//$('#editstart').datetimepicker({ pickDate: false });
+					//$('#editstop').datetimepicker({ pickDate: false });
+		//	});
+</script>
+</body>
+</html>

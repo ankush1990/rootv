@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Root</title>
+<link rel="icon" href="images/root2.png" />
+<link href='css/bootstrap.min.css' rel='stylesheet'>
+<link href='css/config.css' rel='stylesheet' />
+
+<script>
+var temp_user = "";
+var global_user_menu = "";
+
+function loaduserpage(id){
+	if(temp_user != ""){
+		document.getElementById(temp_user).className = '';
+	}
+	temp_user = id;
+	document.getElementById(id).className = 'active';
+	$("#userpageload").load(id);
+}
+
+
+</script>
+</head>
+
+<body>
+<div ng-include="'header.html'"></div>
+<!-- Header -->  
+		<ul class="nav nav-tabs" style="cursor:pointer; margin-top:-1px;">
+        	<li id="usercreation.html" onclick="loaduserpage(this.id)"><a>User Creation</a></li>
+            <li id="maplocation.html" onclick="loaduserpage(this.id)"><a>Map Location</a></li>
+            <li id="mapthermostat.html" onclick="loaduserpage(this.id)"><a>Map Thermostat</a></li>
+		</ul>
+      
+<div id="userpageload"></div>
+</body>
+<script>
+loaduserpage('usercreation.html')
+</script>
+</html>

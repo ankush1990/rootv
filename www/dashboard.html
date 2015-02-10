@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href='css/home.css' rel='stylesheet' />
+<script>
+function changeSetpoingI(value)
+{
+	
+	var value = value; 
+	if(value < 80){
+	
+	value++;
+	document.getElementById("setpoint1").innerHTML=value;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+	xmlhttp.onreadystatechange=function()
+	  {
+	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{	
+	
+		}
+	  }
+	  	xmlhttp.open("GET","rootsetting.php?setpoint="+value,true);
+		xmlhttp.send();
+	}
+}
+
+function changeSetpoingD(value)
+{
+	
+	var value = value; 
+	if(value > 65){
+	value--;
+	document.getElementById("setpoint1").innerHTML=value;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+	xmlhttp.onreadystatechange=function()
+	  {
+	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{	
+	
+		}
+	  }
+	  	xmlhttp.open("GET","rootsetting.php?setpoint="+value,true);
+		xmlhttp.send();
+	}
+}
+
+//===================== code for fan ====================================================
+var tempfan="";
+
+function fanMode(id,callstatus)
+{
+	if(id!=null){
+		if(tempfan=="low")document.getElementById(tempfan).style.backgroundImage="url('images/low_down.png')";
+		if(tempfan=="medium")document.getElementById(tempfan).style.backgroundImage="url('images/medium_down.png')";
+		if(tempfan=="high")document.getElementById(tempfan).style.backgroundImage="url('images/hight_down.png')";
+		if(tempfan=="offfan")document.getElementById(tempfan).style.backgroundImage="url('images/off_down.png')";
+		
+		if(id=="low")document.getElementById(id).style.backgroundImage="url('images/low_up.png')";
+		if(id=="medium")document.getElementById(id).style.backgroundImage="url('images/medium_up.png')";
+		if(id=="high")document.getElementById(id).style.backgroundImage="url('images/high_up.png')";
+		if(id=="offfan")document.getElementById(id).style.backgroundImage="url('images/off_up.png')";
+		tempfan=id;
+		sessionStorage.setItem("fanmode1", id);
+		
+		if(callstatus == "call"){
+			if (window.XMLHttpRequest)
+			  {// code for IE7+, Firefox, Chrome, Opera, Safari
+			  xmlhttp=new XMLHttpRequest();
+			  }
+			else
+			  {// code for IE6, IE5
+			  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+			xmlhttp.onreadystatechange=function()
+			  {
+			  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{	
+			
+				}
+			  }
+			xmlhttp.open("GET","rootsetting.php?fan="+id,true);
+			xmlhttp.send();
+		}
+	}
+}
+
+function fanmodeover(idfan)
+{	
+	if(idfan=="low")document.getElementById(idfan).style.backgroundImage="url('images/low_up.png')";
+	if(idfan=="medium")document.getElementById(idfan).style.backgroundImage="url('images/medium_up.png')";
+	if(idfan=="high")document.getElementById(idfan).style.backgroundImage="url('images/high_up.png')";
+	if(idfan=="offfan")document.getElementById(idfan).style.backgroundImage="url('images/off_up.png')";	
+}
+
+
+function fanmodeout(id)
+{
+	if(id==tempfan){return;}	
+	if(id=="medium")document.getElementById(id).style.backgroundImage="url('images/medium_down.png')";
+	if(id=="low")document.getElementById(id).style.backgroundImage="url('images/low_down.png')";
+	if(id=="high")document.getElementById(id).style.backgroundImage="url('images/hight_down.png')";
+	if(id=="offfan")document.getElementById(id).style.backgroundImage="url('images/off_down.png')";
+
+}
+//=======================================fan code====================================================
+
+
+//===================== code for Mode ====================================================
+var modefan="";
+function modeMode(id,callstatus)
+{
+	if(id!=null){
+		if(modefan=="heating")document.getElementById(modefan).style.backgroundImage="url('images/heating_down.png')";
+		if(modefan=="cooling")document.getElementById(modefan).style.backgroundImage="url('images/cooling_down.png')";
+		if(modefan=="auto")document.getElementById(modefan).style.backgroundImage="url('images/auto_down.png')";
+		if(modefan=="systemoff")document.getElementById(modefan).style.backgroundImage="url('images/off_down.png')";
+		
+		if(id=="heating")document.getElementById(id).style.backgroundImage="url('images/heating_up.png')";
+		if(id=="cooling")document.getElementById(id).style.backgroundImage="url('images/cooling_up.png')";
+		if(id=="auto")document.getElementById(id).style.backgroundImage="url('images/auto_up.png')";
+		if(id=="systemoff")document.getElementById(id).style.backgroundImage="url('images/off_up.png')";
+		modefan=id;
+		sessionStorage.setItem("modemode1", id);
+		
+		if(callstatus == "call"){
+			if (window.XMLHttpRequest)
+			  {// code for IE7+, Firefox, Chrome, Opera, Safari
+			  xmlhttp=new XMLHttpRequest();
+			  }
+			else
+			  {// code for IE6, IE5
+			  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+			xmlhttp.onreadystatechange=function()
+			  {
+			  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{	
+			
+				}
+			  }
+			xmlhttp.open("GET","rootsetting.php?tmode="+id,true);
+			xmlhttp.send();
+		}
+	}
+	
+}
+
+
+
+function modeover(id)
+{
+	if(id=="heating")document.getElementById(id).style.backgroundImage="url('images/heating_up.png')";
+	if(id=="cooling")document.getElementById(id).style.backgroundImage="url('images/cooling_up.png')";
+	if(id=="auto")document.getElementById(id).style.backgroundImage="url('images/auto_up.png')";
+	if(id=="systemoff")document.getElementById(id).style.backgroundImage="url('images/off_up.png')";	
+}
+
+
+function modeout(id)
+{
+	if(id==modefan){return;}	
+	if(id=="heating")document.getElementById(id).style.backgroundImage="url('images/heating_down.png')";
+	if(id=="cooling")document.getElementById(id).style.backgroundImage="url('images/cooling_down.png')";
+	if(id=="auto")document.getElementById(id).style.backgroundImage="url('images/auto_down.png')";
+	if(id=="systemoff")document.getElementById(id).style.backgroundImage="url('images/off_down.png')";
+
+}
+//=======================================Mode code====================================================
+
+
+//================================== code for schedule ====================================================
+var schedulefan="";
+function scheduleMode(id,callstatus)
+{
+	if(id!=null){
+		if(schedulefan=="weekday")document.getElementById(schedulefan).style.backgroundImage="url('images/weekdays_down.png')";
+		if(schedulefan=="vacation")document.getElementById(schedulefan).style.backgroundImage="url('images/vacation_down.png')";
+		if(schedulefan=="custom")document.getElementById(schedulefan).style.backgroundImage="url('images/custom_down.png')";
+		if(schedulefan=="off")document.getElementById(schedulefan).style.backgroundImage="url('images/off_down.png')";
+		
+		if(id=="weekday")document.getElementById(id).style.backgroundImage="url('images/weekdays_up.png')";
+		if(id=="vacation")document.getElementById(id).style.backgroundImage="url('images/vacation_up.png')";
+		if(id=="custom")document.getElementById(id).style.backgroundImage="url('images/custom_up.png')";
+		if(id=="off")document.getElementById(id).style.backgroundImage="url('images/off_up.png')";
+		schedulefan=id;
+		sessionStorage.setItem("scheduleMode", id);
+		
+		if(callstatus == "call"){
+			if (window.XMLHttpRequest)
+			  {// code for IE7+, Firefox, Chrome, Opera, Safari
+			  xmlhttp=new XMLHttpRequest();
+			  }
+			else
+			  {// code for IE6, IE5
+			  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+			xmlhttp.onreadystatechange=function()
+			  {
+			  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{	
+			
+				}
+			  }
+			xmlhttp.open("GET","rootsetting.php?schedule="+id,true);
+			xmlhttp.send();
+		}
+	}
+}
+
+function scheduleover(id)
+{
+	if(id=="weekday")document.getElementById(id).style.backgroundImage="url('images/weekdays_up.png')";
+	if(id=="vacation")document.getElementById(id).style.backgroundImage="url('images/vacation_up.png')";
+	if(id=="custom")document.getElementById(id).style.backgroundImage="url('images/custom_up.png')";
+	if(id=="off")document.getElementById(id).style.backgroundImage="url('images/off_up.png')";	
+}
+
+
+function scheduleout(id)
+{
+	if(id==schedulefan){return;}	
+	if(id=="weekday")document.getElementById(id).style.backgroundImage="url('images/weekdays_down.png')";
+	if(id=="vacation")document.getElementById(id).style.backgroundImage="url('images/vacation_down.png')";
+	if(id=="custom")document.getElementById(id).style.backgroundImage="url('images/custom_down.png')";
+	if(id=="off")document.getElementById(id).style.backgroundImage="url('images/off_down.png')";
+
+}
+//=======================================schedule code====================================================
+
+function tempratureMode(value){
+	if(value !=""){
+		document.getElementById("setpoint1").innerHTML=value;
+	}
+}
+
+function checkAllMode(bool,response){
+	if(bool){
+		pagename = "userauth";
+		var data_parameters = "username="+username+ "&password="+password;
+		//ajax_request(true,pagename,data_parameters,validate_user);
+		return false;
+	}else{
+		var homesetting = http_request.responseText.split("$");
+		fanMode(homesetting[0],"none");
+		modeMode(homesetting[1],"none");
+		scheduleMode(homesetting[2],"none");
+		tempratureMode(homesetting[3]);
+				
+	}
+}
+
+
+</script>
+</head>
+
+<body>
+<div class="container" style="margin-top:80px;">
+	<div class=" col-sm-9  pull-left">
+        <div class="col-sm-5" style="text-align:center;  background-color:#E6E6E6">
+                <p style="font-size:100px; font-weight:bold;">72&deg;</p>
+                <hr style="border-color:#000">
+                <p style="font-size:24px;">Current Zone Temp.</p>
+            </div>
+            <div class="col-sm-1"></div>
+        <div class="col-sm-5" style="text-align:center;  background-color:#E6E6E6;">
+                    <p style="font-size:100px; font-weight:bold;"><span id="setpoint1">75</span>
+                    <button type="button" class="btn btn-default btn-sm up" onClick="changeSetpoingI(setpoint1.innerHTML)">
+                        <span class="glyphicon glyphicon-chevron-up"></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm down" onClick="changeSetpoingD(setpoint1.innerHTML)">
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                    </button>
+                    <div class="clearfix"></div>
+                    </p>
+                    <hr style="border-color:#000">
+                    <p  style="font-size:24px;">Set Point</p>
+        </div>
+		<div class="clearfix"></div>
+        <div class="col-sm-11" style="text-align:center; background-color:#E6E6E6; margin-top:20px; margin-bottom:15px; z-index:1; padding-bottom:5px; padding-top:15px;">
+        	<p style="font-size:24px;">Current Schedule</p>
+            <hr style="border-color:#000">
+            <input id="weekday" type="button" onclick="scheduleMode(this.id,'call');" onmouseover="scheduleover(this.id);" onmouseout="scheduleout(this.id)" style="" />
+            <input id="vacation" type="button" onclick="scheduleMode(this.id,'call');" onmouseover="scheduleover(this.id);" onmouseout="scheduleout(this.id)" style="" />
+            <input id="custom" type="button" onclick="scheduleMode(this.id,'call');" onmouseover="scheduleover(this.id);" onmouseout="scheduleout(this.id)" style="" />
+            <input id="off" type="button" onclick="scheduleMode(this.id,'call');" onmouseover="scheduleover(this.id);" onmouseout="scheduleout(this.id)" style="" />
+		</div>
+        </div>
+
+        <div class="col-sm-3" style="text-align:center;  padding-top:15px;">
+            <input id="low" type="button" onclick="fanMode(this.id,'call');" onmouseover="fanmodeover(this.id);" onmouseout="fanmodeout(this.id)" style="" />
+            <input id="medium" type="button" onclick="fanMode(this.id,'call')" onmouseover="fanmodeover(this.id);" onmouseout="fanmodeout(this.id)" style=""/>
+            <input id="high" type="button" onclick="fanMode(this.id,'call')" onmouseover="fanmodeover(this.id);" onmouseout="fanmodeout(this.id)" style=""/>
+            <input id="offfan" type="button" onclick="fanMode(this.id,'call')" onmouseover="fanmodeover(this.id);" onmouseout="fanmodeout(this.id)" style=" "/>
+            <img src="images/fan_middle.png" height="80px" width="80px" style="position:absolute; bottom:54px; left:106px;" />
+        </div>
+        
+		<div class="col-sm-3" style="text-align:center;  padding-top:45px; margin-bottom:20px;">
+           	<input id="heating" type="button" onclick="modeMode(this.id,'call')" onmouseover="modeover(this.id)" onmouseout="modeout(this.id)" style="" />
+			<input id="cooling" type="button" onclick="modeMode(this.id,'call')" onmouseover="modeover(this.id)" onmouseout="modeout(this.id)" style=""/>
+			<input id="auto" type="button"  onclick="modeMode(this.id,'call')" onmouseover="modeover(this.id)" onmouseout="modeout(this.id)" style=""/>
+			<input id="systemoff" type="button" onclick="modeMode(this.id,'call')" onmouseover="modeover(this.id)" onmouseout="modeout(this.id)" style=""/>
+            <img src="images/mode_middle_ie.png" height="80px" width="80px" style="position:absolute; bottom:54px; left:106px;" />
+        </div>
+		
+</div>	
+</body>
+</html>

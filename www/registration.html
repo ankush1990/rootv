@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Root</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Root - magnum energy solution ">
+<meta name="author" content="Magnum">
+
+<link href='css/bootstrap.min.css' rel='stylesheet'>
+<link href='css/registration.css' rel='stylesheet'>
+<link href='css/config.css' rel='stylesheet'>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/ajax_request.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	var d = new Date();
+	var n = d.toDateString();
+	document.getElementById("header-date").innerHTML = n;
+});
+
+function validation()
+{
+	var company=document.getElementById('company').value;
+	var phone=document.getElementById('phone').value;
+	var math=/^[0-9]+$/.test(phone);
+	document.getElementById("company").style.borderColor = "#ccc";
+	document.getElementById("phone").style.borderColor = "#ccc";
+	
+	if(company == "" || phone == "" ){
+			if(company == "" && phone == ""){
+				document.getElementById("company").style.borderColor = "#D00000";
+				document.getElementById("phone").style.borderColor = "#D00000";
+			}
+			if(company == ""){
+				document.getElementById("company").style.borderColor = "#D00000";
+			}
+			if(phone == ""){
+				document.getElementById("phone").style.borderColor = "#D00000";
+			}
+			return false;
+	}
+	else if(!math || phone.length!=10){
+		document.getElementById("phone").style.borderColor = "#D00000";
+		return false;
+	}
+	else{
+		insert_user(true,'ok');
+	}
+}
+
+function insert_user(bool,response){
+	if(bool){
+		var data = $("#msform :input[name!='cpass']").serialize();
+		pagename = "signup";
+		var data_parameters = data;
+		ajax_request(true,pagename,data_parameters,insert_user);
+		return false;
+	}else{
+		var obj = JSON.parse(response);
+		if(obj[0].status == "Y"){
+			window.location="index.html";
+		}
+	}
+}
+
+</script>
+</head>
+<body>
+<!--Included header-->
+<div class="jumbotron all_bgcolor_withfontcolor" style="margin-top: -40px;">
+	<div class="col-sm-1"></div>
+    	<div class="col-sm-8"><span style="font-size:32px"><a href="index.html" style="text-decoration:none; color:#FFF;">[ root ]</a></span></div>
+        <div  class="col-sm-3"><span id="header-date" style="font-size:26px"></span></div>
+    	<p></p>    
+</div>
+<!--Code for fields-->
+<div class="col-sm-9">
+  <div class="row">
+    <div class="col-sm-5"></div>
+    <div class="col-sm-6" >
+    <form id="msform" method="post">
+	<!-- progressbar -->
+	<ul id="progressbar">
+		<li class="active">Account Setup</li>
+		<li>Login Details</li>
+		<li>Personal Details</li>
+	</ul>
+	<!-- fieldsets -->
+	<fieldset>
+    	<h2 class="fs-title">Create your account</h2>
+		<h3 class="fs-subtitle">This is step 1</h3>
+		<input type="text" name="thermostatname" id="thermostatname" placeholder="Enter Thermostat Name" autocomplete="off" />
+        <input type="text" name="thermostatid" id="thermostatid" placeholder="Enter Thermostat ID" autocomplete="off" onkeyup="checkthermostat('true','ok')" />
+        <input type="text" name="locationname" id="groupname" placeholder="Enter Location" />
+        <input type="button" name="next" id="nextone" class="next action-button" value="Next" />
+	</fieldset>
+	<fieldset>
+		<h2 class="fs-title">Account Information</h2>
+		<h3 class="fs-subtitle">Your login details</h3>
+		<input type="text" name="username" id="username" placeholder="Username" autocomplete="off"  onkeyup="checkusername('true','ok')"/>
+		<input type="text" name="emailid" id="email" placeholder="Email" value="" autocomplete="off" onkeyup="checkemail('true','ok')"/>
+        <label id="my" style="position:absolute; display:none;"></label>
+		<input type="password" name="password" id="password" placeholder="Password" value="" autocomplete="off"/>
+        <label id="my1" style="position:absolute; display:none;"></label>
+		<input type="password" name="cpass" id="cpassword" placeholder="Confirm Password"/>
+		<input type="button" name="previous" class="previous action-button" value="Previous" />
+		<input type="button" name="next" id="nexttwo" class="nexttwo action-button" value="Next" />
+	</fieldset>
+	<fieldset>
+		<h2 class="fs-title">Personal Details</h2>
+		<h3 class="fs-subtitle">We will never sell it</h3>
+		<input type="text" name="companyname" id="company" placeholder="Company Name" />
+		<input type="text" name="phoneno" id="phone" placeholder="Phone" />
+		<input type="button" name="previous" class="previous action-button" value="Previous" />
+		<input type="button" name="submit" class="action-button"  onClick="validation()" value="Submit" />
+	</fieldset>
+</form>
+    
+    </div>
+  </div>
+</div>
+<!--Included Footer-->
+<div class="footer navbar-fixed-bottom all_bgcolor">
+  <div class="container">
+    <p></p>
+  </div>
+</div>
+<script>
+
+var current_fs, next_fs, previous_fs; //fieldsets
+var left, opacity, scale; //fieldset properties which we will animate
+var animating; //flag to prevent quick multi-click glitches
+
+function checkthermostat(bool,response){
+	var thermostatid = document.getElementById("thermostatid").value;
+	if(bool){
+		pagename = "valid_thermostat";
+		var data_parameters = "thermostatid="+thermostatid;
+		ajax_request(true,pagename,data_parameters,checkthermostat);
+	}else{
+		var obj = JSON.parse(response);
+		if(obj[0].status == "N"){
+			document.getElementById("nextone").disabled = "true";
+			document.getElementById("thermostatid").style.borderColor = "#D00000";
+		}else{
+			document.getElementById("nextone").disabled = false;
+			document.getElementById("thermostatid").style.borderColor = "#ccc";
+		}
+	}
+}
+
+
+function checkusername(bool,response){
+	var username = document.getElementById("username").value;
+	if(bool){
+		pagename = "username_exists";
+		var data_parameters = "username="+username;
+		ajax_request(true,pagename,data_parameters,checkthermostat);
+	}else{
+		var obj = JSON.parse(response);
+		if(obj[0].status == "Y"){
+			document.getElementById("nexttwo").disabled = true;
+			document.getElementById("username").style.borderColor = "#D00000";
+		}else{
+			document.getElementById("nexttwo").disabled = false;
+			document.getElementById("username").style.borderColor = "#ccc";
+		}
+	}
+}
+
+
+function checkemail(bool,response){
+	document.getElementById("my1").innerHTML = "";
+	var emailid = document.getElementById("email").value;
+	if(bool){
+		pagename = "email_exists";
+		var data_parameters = "emailid="+emailid;
+		ajax_request(true,pagename,data_parameters,checkemail);
+	}else{
+		var obj = JSON.parse(response);
+		if(obj[0].status == "Y"){
+			document.getElementById("nexttwo").disabled = true;
+			document.getElementById("email").style.borderColor = "#D00000";
+		}else{
+			document.getElementById("nexttwo").disabled = false;
+			document.getElementById("email").style.borderColor = "#ccc";
+		}
+	}
+}
+
+
+
+
+
+$(".next").click(function(){
+	
+	var thermostatname = document.getElementById("thermostatname").value;
+	var thermostat = document.getElementById("thermostatid").value;
+	var groupname = document.getElementById("groupname").value;
+	
+	if(thermostat == "" || groupname == "" || thermostatname == ""){
+		if(thermostat == ""){
+			document.getElementById("thermostatid").style.borderColor = "#D00000";
+		}
+		if(groupname == ""){
+			document.getElementById("groupname").style.borderColor = "#D00000";
+		}
+		if(thermostatname == ""){
+			document.getElementById("thermostatname").style.borderColor = "#D00000";
+		}
+		if(thermostat == "" && groupname == "" && thermostatname == ""){
+			document.getElementById("groupname").style.borderColor = "#D00000";
+			document.getElementById("thermostatid").style.borderColor = "#D00000";
+			document.getElementById("thermostatname").style.borderColor = "#D00000";
+		}
+	}
+	else{
+		document.getElementById("groupname").style.borderColor = "#ccc";
+		document.getElementById("thermostatid").style.borderColor = "#ccc";
+		document.getElementById("thermostatname").style.borderColor = "#ccc";
+		
+		if(animating) return false;
+			animating = true;
+		
+			current_fs = $(this).parent();
+			next_fs = $(this).parent().next();
+			
+			//activate next step on progressbar using the index of next_fs
+			$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+			
+			//show the next fieldset
+			next_fs.show(); 
+			//hide the current fieldset with style
+			current_fs.animate({opacity: 0}, {
+				step: function(now, mx) {
+					//as the opacity of current_fs reduces to 0 - stored in "now"
+					//1. scale current_fs down to 80%
+					scale = 1 - (1 - now) * 0.2;
+					//2. bring next_fs from the right(50%)
+					left = (now * 50)+"%";
+					//3. increase opacity of next_fs to 1 as it moves in
+					opacity = 1 - now;
+					current_fs.css({'transform': 'scale('+scale+')'});
+					next_fs.css({'left': left, 'opacity': opacity});
+				}, 
+				duration: 800, 
+				complete: function(){
+					current_fs.hide();
+					animating = false;
+				}, 
+				//this comes from the custom easing plugin
+				easing: 'easeInOutBack'
+			});
+	}
+});
+
+$(".nexttwo").click(function(){
+	
+	var username = document.getElementById("username").value;
+	var email = document.getElementById("email").value;
+	var password = document.getElementById("password").value;
+	var cpassword = document.getElementById("cpassword").value;
+	
+	
+	document.getElementById("username").style.borderColor = "#ccc";
+	document.getElementById("email").style.borderColor = "#ccc";
+	document.getElementById("password").style.borderColor = "#ccc";
+	document.getElementById("cpassword").style.borderColor = "#ccc";
+	
+	
+	var my = document.getElementById("my").innerHTML;
+	var my1 = document.getElementById("my1").innerHTML;
+	//alert(my+"--"+my1);
+	var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z\-])+\.)+([a-zA-Z]{2,4})+$/;
+	
+	if(username == "" || email == "" || password == "" || cpassword == ""){
+		if(username == "" && email == "" && password == "" && cpassword == ""){
+			document.getElementById("username").style.borderColor = "#D00000";
+			document.getElementById("email").style.borderColor = "#D00000";
+			document.getElementById("password").style.borderColor = "#D00000";
+			document.getElementById("cpassword").style.borderColor = "#D00000";
+		}
+		if(username == ""){
+			document.getElementById("username").style.borderColor = "#D00000";
+		}
+		if(email == ""){
+			document.getElementById("email").style.borderColor = "#D00000";
+		}
+		if(password == ""){
+			document.getElementById("password").style.borderColor = "#D00000";
+		}
+		if(cpassword == ""){
+			document.getElementById("cpassword").style.borderColor = "#D00000";
+		}
+		
+	}
+	else if(my == "0" || my1 == "0"){
+	
+		if(my == "0" && my1 == "0"){
+			document.getElementById("username").style.borderColor = "#D00000";
+			document.getElementById("email").style.borderColor = "#D00000";
+		}
+
+		if(my == "0"){
+			document.getElementById("username").style.borderColor = "#D00000";
+		}
+		if(my1 == "0"){
+			document.getElementById("email").style.borderColor = "#D00000";
+		}
+	}
+	else if(!filter.test(email))
+	{
+		document.getElementById("email").style.borderColor = "#D00000";
+	}
+	else if(password != cpassword)
+	{
+		document.getElementById("password").style.borderColor = "#D00000";
+		document.getElementById("cpassword").style.borderColor = "#D00000";
+	}
+	else{
+		document.getElementById("username").style.borderColor = "#ccc";
+		document.getElementById("email").style.borderColor = "#ccc";
+		document.getElementById("password").style.borderColor = "#ccc";
+		document.getElementById("cpassword").style.borderColor = "#ccc";
+		
+		
+		if(animating) return false;
+			animating = true;
+		
+			current_fs = $(this).parent();
+			next_fs = $(this).parent().next();
+			
+			//activate next step on progressbar using the index of next_fs
+			$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+			
+			//show the next fieldset
+			next_fs.show(); 
+			//hide the current fieldset with style
+			current_fs.animate({opacity: 0}, {
+				step: function(now, mx) {
+					//as the opacity of current_fs reduces to 0 - stored in "now"
+					//1. scale current_fs down to 80%
+					scale = 1 - (1 - now) * 0.2;
+					//2. bring next_fs from the right(50%)
+					left = (now * 50)+"%";
+					//3. increase opacity of next_fs to 1 as it moves in
+					opacity = 1 - now;
+					current_fs.css({'transform': 'scale('+scale+')'});
+					next_fs.css({'left': left, 'opacity': opacity});
+				}, 
+				duration: 800, 
+				complete: function(){
+					current_fs.hide();
+					animating = false;
+				}, 
+				//this comes from the custom easing plugin
+				easing: 'easeInOutBack'
+			});
+	}
+});
+
+
+$(".previous").click(function(){
+	if(animating) return false;
+	animating = true;
+	
+	current_fs = $(this).parent();
+	previous_fs = $(this).parent().prev();
+	
+	//de-activate current step on progressbar
+	$("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+	
+	//show the previous fieldset
+	previous_fs.show(); 
+	//hide the current fieldset with style
+	current_fs.animate({opacity: 0}, {
+		step: function(now, mx) {
+			//as the opacity of current_fs reduces to 0 - stored in "now"
+			//1. scale previous_fs from 80% to 100%
+			scale = 0.8 + (1 - now) * 0.2;
+			//2. take current_fs to the right(50%) - from 0%
+			left = ((1-now) * 50)+"%";
+			//3. increase opacity of previous_fs to 1 as it moves in
+			opacity = 1 - now;
+			current_fs.css({'left': left});
+			previous_fs.css({'transform': 'scale('+scale+')', 'opacity': opacity});
+		}, 
+		duration: 800, 
+		complete: function(){
+			current_fs.hide();
+			animating = false;
+		}, 
+		//this comes from the custom easing plugin
+		easing: 'easeInOutBack'
+	});
+});
+
+
+</script>
+<script src="http://thecodeplayer.com/uploads/js/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="http://thecodeplayer.com/uploads/js/jquery.easing.min.js" type="text/javascript"></script>
+</body>
+</html>

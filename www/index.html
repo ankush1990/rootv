@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Root</title>
+<link rel="icon" href="images/favicon.png" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Root - magnum energy solutions">
+<meta name="author" content="Magnum">
+
+<link href='css/bootstrap.min.css' rel='stylesheet'>
+<link href='css/config.css' rel='stylesheet'>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/ajax_request.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	var d = new Date();
+	var n = d.toDateString();
+	document.getElementById("header-date").innerHTML = n;
+	$(".close").click(function(){
+		$("#myAlert").alert('close');
+	});
+}); 
+
+function validate_user(bool,response){
+	if(bool){
+		var username = document.getElementById("username").value;
+		var password = document.getElementById("password").value;
+		
+		if(username != "" && password != ""){
+			pagename = "userauth";
+			var data_parameters = "username="+username+ "&password="+password;
+			ajax_request(true,pagename,data_parameters,validate_user);
+			return false;
+		}
+		else{
+			document.getElementById("error-message").style.display = 'block';
+		}
+	}else{
+		
+		var obj = JSON.parse(response);
+		if(obj[0].status == "N"){
+			document.getElementById("error-message").innerHTML  = '<div id="myAlert" class="bs-example">\<div class="alert alert-danger alert-error">\
+			<a  class="close" data-dismiss="alert">&times;</a>\<strong>Error! </strong>Incorrect username or password.</div>';
+		}
+		else{
+			sessionStorage.setItem("userid", obj[0].user_id);
+			sessionStorage.setItem("slocid",obj[0].sloc_id);
+			sessionStorage.setItem("orgid", obj[0].org_id);
+			sessionStorage.setItem("username", obj[0].username);
+			window.location="home.html?pagetype=dashboard";
+		} 
+	}
+}
+</script>
+</head>
+<body>
+<!--Included header-->
+<div class="jumbotron all_bgcolor_withfontcolor" style="margin-top: -40px;">
+	<div class="col-sm-1"></div>
+    	<div class="col-sm-8"><span style="font-size:32px"><a href="index.html" style="text-decoration:none; color:#FFF;">[ root ]</a></span></div>
+        <div  class="col-sm-3"><span id="header-date" style="font-size:26px"></span></div>
+    	<p></p>    
+</div>
+<!--Alert for incorrect Username and Password-->
+<div class="col-sm-12" >
+    <div class="col-sm-4"></div>
+        <div class="col-sm-4" id="error-message" >
+            
+        </div>
+</div>
+<!--Code for Username and Password fields-->
+<div class="col-sm-9">
+  <div class="row">
+    <div class="col-sm-6"></div>
+    <div class="col-sm-4" >
+    <form method="post" action="home.html"  role="form" autocomplete="off" onSubmit="return validate_user('true','ok')">
+      <label for="email">Username:</label>
+      	<div class="input-group" style="margin-bottom: 25px">
+            <span class="input-group-addon input-group-addon-withoutradius">
+                <i class="glyphicon glyphicon-user"></i>
+            </span>
+           
+            <input class="form-control" type="text" required  value="" id="username">
+        
+		</div>
+      <label for="email">Password:</label>
+      	<div class="input-group" style="margin-bottom: 25px">
+            <span class="input-group-addon input-group-addon-withoutradius">
+                <i class="glyphicon glyphicon-lock"></i>
+            </span>
+            <input  class="form-control" type="password" required value="" id="password">
+		</div>
+      <div class="checkbox">
+        <label><input type="checkbox"> Remember me </label>
+        <label style="float:right"><a class="all-text-hovereffect" href="forgot.php">Forgot password?</a></label>
+      </div>
+       <div class="form-group">
+       <input type="submit" name="submit" class="btn btn-custom	 btn-sm btn-block all-btn-custom" value="Login" >
+       </div>
+       <div class="form-group">
+            <div class="col-md-12 control">
+                <div style="border-top: 1px solid#888; padding-top:10px;" >
+                Don't have an account? 
+                <a class="all-text-hovereffect-bold" href="registration.html">Sign Up Here</a>
+                </div>
+            </div>
+       </div>    
+    </form>
+    </span>
+    </div>
+  </div>
+</div>
+<!--Included Footer-->
+<div class="footer navbar-fixed-bottom all_bgcolor">
+  <div class="container">
+    <p></p>
+  </div>
+</div>
+</body>
+</html>

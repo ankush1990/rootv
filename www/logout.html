@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<title></title>
+<script>
+function destroy_session() {
+	sessionStorage.setItem("userid", "");
+	sessionStorage.setItem("slocid","");
+	sessionStorage.setItem("orgid", "");
+	sessionStorage.setItem("username","");
+	window.location = "index.html";
+}
+</script>
+</head>
+<body>
+</body>
+<script>
+destroy_session();
+</script>
+</html>

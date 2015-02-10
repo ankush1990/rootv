@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href='css/config.css' rel='stylesheet' />
+<script>
+
+var global_Location = "";
+
+function loadloactiondata(bool,response){
+	
+	if(bool){
+		pagename = "get_location";
+		var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&locationname="+"";
+		ajax_request(true,pagename,data_parameters,loadloactiondata);
+	}else{
+		var obj = JSON.parse(response);
+		var str = "";
+		
+		for(var i = 0,j = 1; i < obj.length; i++,j++){
+			str += '<tr><td>'+obj[i].location_name+'</td><td>'+obj[i].username+'</td><td>'+obj[i].create_dt+'</td><td>&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-edit" style="cursor:pointer" title="Edit" onClick="hideshowdivlocation(\''+obj[i].loc_id+'\',\''+obj[i].location_name+'\',\''+obj[i].loc_active_yn+'\')"></span></td></tr>';	
+		}
+		document.getElementById("Locationdataload").innerHTML = str;
+	}
+}
+
+
+
+function saveLocation(bool,reponse){
+	if(bool){
+		document.getElementById("Locationaddbutton").disabled = false;
+		document.getElementById("Locationnameerror").style.display = 'none';
+		document.getElementById("Locationnamesuccessicon").style.display = 'none';
+		document.getElementById("Locationnamewarningicon").style.display = 'none';
+		document.getElementById("Locationnamewarning").style.display = 'none';
+		document.getElementById("Locationnameerrorheader").className = 'form-group has-feedback';
+		
+		var validatecheck = document.getElementById("Locationnamevalidatecheck").value;
+		if(reponse != ""){
+			pagename = "location";
+			flag = "A";
+			locactiveyn = "Y";
+			var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&locid="+locid+ "&locationname="+reponse+ "&flag="+flag+ "&id="+userid+ "&locactiveyn="+locactiveyn;
+			ajax_request(true,pagename,data_parameters,saveLocation);
+		}
+		else{
+			document.getElementById("Locationnameerror").style.display = 'block';
+			document.getElementById("Locationnameerrorheader").className = 'form-group has-feedback has-error'; 
+		}
+		
+	} else {
+		document.getElementById("Locationnamesuccessicon").style.display = 'none';
+		document.getElementById("Locationname").value = "";
+		document.getElementById("Locationalertsuccess").style.display = "block";
+		//document.getElementById("Locationdataload").innerHTML = reponse;
+		$(".alert").delay(200).addClass("in").fadeOut(2500);
+		setTimeout(function(){reloadpagelocationpage()},2500);
+	}
+}
+
+
+function reloadpagelocationpage(){
+	$("#setuppageload").load("location.html");
+}
+
+function checkLocationname(bool,response){
+	document.getElementById("Locationaddbutton").disabled = false;
+	document.getElementById("Locationnameerror").style.display = 'none';
+	document.getElementById("Locationnamesuccessicon").style.display = 'none';
+	document.getElementById("Locationnamewarningicon").style.display = 'none';
+	document.getElementById("Locationnamewarning").style.display = 'none';
+	document.getElementById("Locationnameerrorheader").className = 'form-group has-feedback';
+	
+	if(response.length > 0){
+		if(bool){
+			locid = sessionStorage.getItem("locid");
+			pagename = "location_exists";
+			flag = "A";
+			var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&locid="+locid+ "&flag="+flag+ "&locationname="+response;
+			ajax_request(true,pagename,data_parameters,checkLocationname);
+		}else{
+			var obj = JSON.parse(response);
+			if(obj[0].status == "Y"){
+				document.getElementById("Locationaddbutton").disabled = true;
+				document.getElementById("Locationnamewarning").style.display = 'block';
+				document.getElementById("Locationnamewarningicon").style.display = 'block';
+				document.getElementById("Locationnameerrorheader").className = 'form-group has-feedback has-warning';
+			}else{
+				
+				document.getElementById("Locationnamesuccessicon").style.display = 'block';
+				document.getElementById("Locationnameerrorheader").className = 'form-group has-feedback has-success ';
+			}
+		}
+	}
+}
+
+function searchLocation(bool,response){
+	if(bool){
+		pagename = "get_location";
+		var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&locationname="+response;
+		ajax_request(true,pagename,data_parameters,searchLocation);
+	}else{
+		var obj = JSON.parse(response);
+		var str = "";
+		if(obj[0].status != "N"){
+			for(var i = 0,j = 1; i < obj.length; i++,j++){
+				str += '<tr><td>'+obj[i].location_name+'</td><td>'+obj[i].username+'</td><td>'+obj[i].create_dt+'</td><td>&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-edit" style="cursor:pointer" title="Edit" onClick="hideshowdivlocation(\''+obj[i].loc_id+'\',\''+obj[i].location_name+'\',\''+obj[i].loc_active_yn+'\')"></span></td></tr>';	
+			}
+			document.getElementById("Locationdataload").innerHTML = str;
+		}
+		else{
+			str = '<tr align="center"><td colspan="4">No Result Found</td></tr>';	
+			document.getElementById("Locationdataload").innerHTML = str;
+		}
+	}
+}
+
+function hideshowdivlocation(id,value,activeyn){
+	if(activeyn == "N")document.getElementById("locationactiveyn").checked = false;
+	else document.getElementById("locationactiveyn").checked = true;
+
+	document.getElementById("editlocationdate").disabled = false;
+	document.getElementById("editLocationerror2").style.display = 'none';
+	document.getElementById("editLocationsuccessicon").style.display = 'none';
+	document.getElementById("editLocationwarningicon").style.display = 'none';
+	document.getElementById("editLocationwarning").style.display = 'none';
+	document.getElementById("editLocationerrorheader2").className = 'form-group has-feedback';
+	
+	document.getElementById("editLocationid").value = id;
+	document.getElementById("editLocationname").value = value;
+	document.getElementById("editLocationdiv").style.display = 'block';
+	document.getElementById("addLocationdiv").style.display = 'none';
+}
+
+function exitlocationdivhide(){
+	document.getElementById("editLocationdiv").style.display = 'none';
+	document.getElementById("addLocationdiv").style.display = 'block';
+}
+
+function editcheckLocationname(bool,response){
+	document.getElementById("editlocationdate").disabled = false;
+	document.getElementById("editLocationerror2").style.display = 'none';
+	document.getElementById("editLocationsuccessicon").style.display = 'none';
+	document.getElementById("editLocationwarningicon").style.display = 'none';
+	document.getElementById("editLocationwarning").style.display = 'none';
+	document.getElementById("editLocationerrorheader2").className = 'form-group has-feedback';
+	
+	if(response.length > 0){
+		var loc_id = document.getElementById("editLocationid").value;
+		if(bool){
+			pagename = "location_exists";
+			flag = "E";
+			var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&locid="+loc_id+ "&flag="+flag+ "&locationname="+response;
+			ajax_request(true,pagename,data_parameters,editcheckLocationname);
+		}else{
+			var obj = JSON.parse(response);
+			if(obj[0].status == "Y"){
+				document.getElementById("editlocationdate").disabled = true;
+				document.getElementById("editLocationwarning").style.display = 'block';
+				document.getElementById("editLocationwarningicon").style.display = 'block';
+				document.getElementById("editLocationerrorheader2").className = 'form-group has-feedback has-warning';
+			}else{
+				document.getElementById("editLocationsuccessicon").style.display = 'block';
+				document.getElementById("editLocationerrorheader2").className = 'form-group has-feedback has-success ';
+			}
+		}
+				
+	}
+	else{
+		document.getElementById("editlocationdate").disabled = true;
+		document.getElementById("editLocationerror2").style.display = 'block';
+		document.getElementById("editLocationerrorheader2").className = 'form-group has-feedback has-error';
+	}
+}
+
+function editlocationname(bool,response){
+	if(bool){
+
+		if(document.getElementById("locationactiveyn").checked){
+			locactiveyn = "Y";
+		}
+		else locactiveyn = "N";
+		
+		var loc_id = document.getElementById("editLocationid").value;
+		pagename = "location";
+		flag = "E";
+		var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&locid="+loc_id+ "&flag="+flag+ "&locationname="+response+ "&id="+userid+ "&locactiveyn="+locactiveyn;
+		ajax_request(true,pagename,data_parameters,editlocationname);
+	}else{
+		$('#locationupdatesucess').modal({
+			keyboard: true 
+		});
+		document.getElementById("editLocationdiv").style.display = 'none';
+		document.getElementById("addLocationdiv").style.display = 'block';
+		loadloactiondata(true,"ok");
+	}
+}
+
+</script>
+</head>
+<body>
+<div class="container">
+    <div class="row"><br/>
+    	<div id="addLocationdiv1"> 
+        <div id="addLocationdiv" class="col-sm-3" style="border:1px solid #CCC;">
+        	<h4><b>Add New Location</b></h4><hr>
+            	<div id="Locationalertsuccess" class="span4 pull-center" style="display:none;">
+        			<div class="alert alert-success fade">
+        			<strong>Success! </strong> Location added successfully.
+    				</div>
+                </div>
+                
+                
+            	<div id="Locationnameerrorheader" class="form-group has-feedback">
+                
+                 <label for="inputError2">Location Name</label>
+                     <input type="text" class="form-control" id="Locationname" onKeyUp="checkLocationname('true',this.value)">
+                     <input type="hidden" id="Locationnamevalidatecheck" \>
+                     <span id="Locationnameerror" style="display:none;" class="help-block">Please fill out this field</span>
+                     <span id="Locationnamesuccessicon" style="display:none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                     <span id="Locationnamewarningicon" style="display:none" class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+                     <span id="Locationnamewarning" style="display:none;" class="help-block">Name already exists.</span>
+				</div>
+				<button onClick="saveLocation(true,Locationname.value)" type="button" id="Locationaddbutton" class="all-btn-custom btn-sm btn-block ">
+          			<span class="glyphicon glyphicon-plus"></span> ADD
+        		</button>
+         		<br />
+        </div>
+        
+        
+<!-- ===============Update Detail Success============-->
+<div id="locationupdatesucess" class="modal fade" style="margin-top:80px;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal-header-info" style="background-color:#343334; color:#FFF">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Success</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                <div class="modal-body">
+                    <div class="container">
+     					Location updated successfully.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+                </form>
+            </div>
+        </div>
+</div>
+<!-- ===============Update Detail Success============-->
+        
+        
+<!--  Edit Department  -->   
+		<div id="editLocationdiv" class="col-sm-3" style="border:1px solid #CCC; display:none;">
+        	<h4><b>Edit Location</b></h4><hr>
+            	<div id="editLocationalertsuccess" class="span4 pull-center" style="display:none;">
+        			<div id="deptalert" class="alert alert-success fade">
+        			<strong>Success! </strong> Location Updated successfully.
+    				</div>
+                </div>
+				
+            
+           		<div class="form-group has-feedback" id="editLocationerrorheader2">
+                    <label for="inputError2">Location Name</label>
+                    <input type="text" class="form-control" id="editLocationname" onKeyUp="editcheckLocationname('true',this.value)">
+                    <input type="hidden" id="editLocationvalidatecheck" \>
+                    <input type="hidden" id="editLocationid" \>
+                    
+                    <span id="editLocationerror2" style="display:none;" class="help-block">Please fill out this field</span>
+                    <span id="editLocationsuccessicon" style="display:none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    <span id="editLocationwarningicon" style="display:none" class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+                    <span id="editLocationwarning" style="display:none;" class="help-block">Location already exists</span>
+                    <br/>
+                    <b>Active</b> <input type="checkbox" id="locationactiveyn" checked />
+				</div>
+                
+				 <div class="form-group">         
+          			<button  class="btn-exit" style="width:49%" onClick="exitlocationdivhide()">Exit</button>
+                    <button id="editlocationdate" class="btn-adddetail" style="width:49%" onClick="editlocationname(true,editLocationname.value)">Update</button>
+          		</div>
+         		<br />
+        </div>
+<!--  Edit Department  -->  
+        
+ 
+        <div  id="loadLocationdetaildata" class="col-sm-9">
+        <table class="table table-hover">
+           <thead>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>Location List</h4>
+                        <div class="btn-group pull-right">
+                             <div class="form-group has-feedback">
+                                <input type="text" class="form-control" id="inputSuccess2" onKeyUp="searchLocation(true,this.value)" placeholder="Enter Location Name"/>
+                                <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              <tr>
+                 <th>Location Name</th><th>Modified By</th><th>Modified On</th><th>Action</th>
+              </tr>
+           </thead>
+           <tbody id="Locationdataload">
+          		
+           </tbody>
+         </table>   
+        </div>
+        </div>
+	</div>
+</div>
+</body>
+<script>
+loadloactiondata(true,"ok");
+</script>
+</html>

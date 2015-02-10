@@ -1,0 +1,146 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* body with background image*/
+body {
+    background: url(../images/root2.png);
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-attachment: fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.jumbotron {
+    padding: 48px 0;
+}
+
+
+
+/* Backgroud color only*/
+.all_bgcolor{
+	background-color:#343334;
+}
+
+/*location Dropdown Backgroud color only*/
+.l_all_bgcolor{
+	//background-color:#195A7F;
+	background-color:#2F506C;
+	
+}
+
+/*location Dropdown Backgroud color only*/
+.t_all_bgcolor{
+	background-color:#5B7D91;
+}
+
+/* Backgroud color with white font color*/
+.all_bgcolor_withfontcolor{
+	background-color:#343334;
+	color:#FFF;
+}
+
+/* Backgroud color only*/
+.fontwhite_color{
+ 	color:#FFF;
+}
+
+/* Backgroud color with white font color*/
+.header_bgcolor_withfontcolor{
+	background-color:#343334;
+	color:#FFF;
+}
+
+/*Button Effect with all color Codes*/
+.all-btn-custom {
+  border-radius: 0;
+  background-color: #2F506C;
+  border-color: #134562;
+  color:#FFF;
+  font-weight:bold;
+  border:none;
+}
+.all-btn-custom:hover
+ {
+  background-color: #134562;
+  border-color: #134562;
+  color:#FFF;
+}
+.all-btn-custom:active
+{
+  background-color: #2F506C;
+  border-color: #2F506C;
+  color:#FFF;
+}
+/* Test blue color with hover effetc*/
+.all-text-hovereffect{
+	cursor:pointer; color:#2F506C; text-decoration:none;
+}
+
+.all-text-hovereffect:hover{
+	color:#134562;
+	text-decoration:none;
+}
+
+/* Test blue color with bold hover effetc*/
+.all-text-hovereffect-bold{
+	cursor:pointer; font-weight:bold; color:#2F506C; text-decoration:none;
+}
+
+.all-text-hovereffect-bold:hover{
+	color:#134562;
+	text-decoration:none;
+}
+
+/* With out border radius*/
+input[type='text']{
+	border-radius: 0;
+}
+
+input[type='password']{
+	border-radius: 0;
+}
+
+.input-group-addon-withoutradius{
+	border-radius: 0;
+}
+
+
+/*table hover effect*/
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+  background-color: #134562;
+  color:#FFF;
+}
+
+/*button style to show buttion inline in setup*/
+.btn-adddetail{ background-color:#2F506C; height:30px;  border:none; color:#FFF; border-radius: 0;}
+.btn-adddetail:hover{ background-color:#134562;}
+
+.btn-exit{ background-color:#d43f3a; height:30px;  border:none; color:#FFF; border-radius: 0;}
+.btn-exit:hover{ background-color:#C12E2A;}
+
+/*select box without radius*/
+.select-box-drop{
+	border-radius: 0;
+}
+
+/*responsive three icon color*/
+.icon-bar{
+  color: #FFF;
+  border-color: #FFF;
+  background-color: #FFF;
+}
+
+
+.rotate {
+-webkit-transform: rotate(-90deg);
+-moz-transform: rotate(-90deg);
+-ms-transform: rotate(-90deg);
+-o-transform: rotate(-90deg);
+filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+

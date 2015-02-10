@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href='css/config.css' rel='stylesheet' />
+<script>
+
+var global_thermostat = "";
+
+
+function loadthermstatdata(bool,response){
+	if(bool){
+		pagename = "get_thermostat";
+		var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&thermostatname="+"";
+		ajax_request(true,pagename,data_parameters,loadthermstatdata);
+	}else{
+		var obj = JSON.parse(response);
+		var str = "";
+		
+		for(var i = 0,j = 1; i < obj.length; i++,j++){
+			str += '<tr><td>'+obj[i].thermostat_name+'</td><td>'+obj[i].location_name+'</td><td>'+obj[i].classification_name+'</td><td>'+obj[i].class_det_description+'</td><td>'+obj[i].username+'</td><td>'+obj[i].create_dt+'</td><td>&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-edit" style="cursor:pointer" title="Edit" onClick="hideshowdivthermostat(\''+obj[i].therm_id+'\',\''+obj[i].thermostat_name+'\',\''+obj[i].thermostat_id+'\',\''+obj[i].loc_id+'\')"></span></td></tr>';	
+		}
+		document.getElementById("thermostatdataload").innerHTML = str;
+		
+	}
+}
+
+
+function dropdownloactiondata(bool,response){
+	if(bool){
+		pagename = "get_location";
+		var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&locationname="+"";
+		ajax_request(true,pagename,data_parameters,dropdownloactiondata);
+	}else{
+		var obj = JSON.parse(response);
+		var str = "";
+		for(var i = 0,j = 1; i < obj.length; i++,j++){
+			str += '<option value=\''+obj[i].loc_id+'\'>'+obj[i].location_name+'</option>';	
+		}
+		document.getElementById("ass_location_id").innerHTML = str;
+		document.getElementById("editass_location_id").innerHTML = str;
+	}
+}
+
+
+function savethermostat(bool,response){
+	document.getElementById("thermostatnerror").style.display = 'none';
+	document.getElementById("thermostatnameerror").style.display = 'none';
+	document.getElementById("thermostatnerrorheader").className = 'form-group has-feedback';
+	document.getElementById("thermostatnameerrorheader").className = 'form-group has-feedback';
+	if(bool){
+		var thermostatname = document.getElementById("thermostatn").value;
+		var locationid = document.getElementById("ass_location_id").value;
+		if(response != "" && thermostatname != ""){
+			var validatecheck = document.getElementById("thermostatnamevalidatecheck").value;
+			var validatecheck1 = document.getElementById("thermostatnvalidatecheck").value;
+			if(validatecheck.trim() != "N" && validatecheck1.trim() != "Y"){
+				pagename = "thermostat";
+				flag = "A";
+				thermactiveyn = "Y";
+				var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&locid="+locationid+ "&thermostatname="+thermostatname+ "&flag="+flag+ "&id="+userid+ "&thermostatid="+response+ "&classificationid="+0+ "&classdetid="+0+ "&thermid="+0+ "&thermactiveyn="+thermactiveyn;
+				ajax_request(true,pagename,data_parameters,savethermostat);
+			}
+		}else{
+			if(response == ""){
+				document.getElementById("thermostatnameerror").style.display = 'block';
+				document.getElementById("thermostatnameerrorheader").className = 'form-group has-feedback has-error';
+			}
+			if(thermostatname == ""){
+				document.getElementById("thermostatnerror").style.display = 'block';
+				document.getElementById("thermostatnerrorheader").className = 'form-group has-feedback has-error';
+			}
+		}
+	} else {
+		var obj = JSON.parse(response);
+		if(obj[0].status == "N"){
+			//document.getElementById("thermostatalertsuccess").style.display = "block";
+		}else{
+			document.getElementById("thermostatnamesuccessicon").style.display = 'none';
+			document.getElementById("thermostatnsuccessicon").style.display = 'none';
+			document.getElementById("thermostatname").value = "";
+			document.getElementById("thermostatn").value = "";
+			document.getElementById("thermostatalertsuccess").style.display = "block";
+			$(".alert").delay(200).addClass("in").fadeOut(2500);
+			setTimeout(function(){reloadpage()},2500);
+		}
+	}
+}
+
+
+function reloadpage(){
+	$("#setuppageload").load("thermostat.html");
+}
+
+function checkthermostatname(bool,response){
+	document.getElementById("thermostataddbutton").disabled = false;
+	document.getElementById("thermostatnameerror").style.display = 'none';
+	document.getElementById("thermostatnamesuccessicon").style.display = 'none';
+	document.getElementById("thermostatnamewarningicon").style.display = 'none';
+	document.getElementById("thermostatnamewarning").style.display = 'none';
+	document.getElementById("thermostatnameerrorheader").className = 'form-group has-feedback';
+	
+	if(response.length > 0){
+		if(bool){
+		pagename = "valid_thermostat";
+		var data_parameters = "thermostatid="+response;
+		ajax_request(true,pagename,data_parameters,checkthermostatname);
+	}else{
+		var obj = JSON.parse(response);
+		document.getElementById("thermostatnamevalidatecheck").value = obj[0].status;
+		if(obj[0].status == "N"){
+			document.getElementById("thermostataddbutton").disabled = true;
+			document.getElementById("thermostatnamewarning").style.display = 'block';
+			document.getElementById("thermostatnamewarningicon").style.display = 'block';
+			document.getElementById("thermostatnameerrorheader").className = 'form-group has-feedback has-warning';
+		}else{
+			document.getElementById("thermostatnamesuccessicon").style.display = 'block';
+			document.getElementById("thermostatnameerrorheader").className = 'form-group has-feedback has-success ';
+			}
+		}
+	}
+}
+
+
+function checkthermostatn(bool,response){
+	document.getElementById("thermostataddbutton").disabled = false;
+	document.getElementById("thermostatnerror").style.display = 'none';
+	document.getElementById("thermostatnsuccessicon").style.display = 'none';
+	document.getElementById("thermostatnwarningicon").style.display = 'none';
+	document.getElementById("thermostatnwarning").style.display = 'none';
+	document.getElementById("thermostatnerrorheader").className = 'form-group has-feedback';
+	
+	if(response.length > 0){
+		if(bool){
+			pagename = "thermostat_exists";
+			flag = "A";
+			thermid = document.getElementById("editthermostatid").value;
+			var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&thermid="+0+ "&flag="+flag+ "&thermostatname="+response;
+			ajax_request(true,pagename,data_parameters,checkthermostatn);
+		}else{
+			var obj = JSON.parse(response);
+			document.getElementById("thermostatnvalidatecheck").value = obj[0].status;
+			if(obj[0].status == "N"){
+				document.getElementById("thermostatnsuccessicon").style.display = 'block';
+				document.getElementById("thermostatnerrorheader").className = 'form-group has-feedback has-success ';
+			}else{
+				document.getElementById("thermostataddbutton").disabled = true;
+				document.getElementById("thermostatnwarning").style.display = 'block';
+				document.getElementById("thermostatnwarningicon").style.display = 'block';
+				document.getElementById("thermostatnerrorheader").className = 'form-group has-feedback has-warning';
+			}
+		}
+	}
+}
+
+
+function editcheckthermostatname(bool,response){
+	document.getElementById("editthermostatdate").disabled = false;
+	document.getElementById("editthermostatnameerror").style.display = 'none';
+	document.getElementById("editthermostatnamesuccessicon").style.display = 'none';
+	document.getElementById("editthermostatnamewarningicon").style.display = 'none';
+	document.getElementById("editthermostatnamewarning").style.display = 'none';
+	document.getElementById("editthermostatnameerrorheader").className = 'form-group has-feedback';
+	
+	var old_thermostatid = document.getElementById("editthermostatidhidden").value;
+	
+	if(old_thermostatid != response){
+		if(response.length > 0){
+			if(bool){
+				pagename = "valid_thermostat";
+				thermid = document.getElementById("editthermostatid").value;
+				flag = "E";
+				var data_parameters = "thermostatid="+response;
+				ajax_request(true,pagename,data_parameters,editcheckthermostatname);
+			}else{
+				var obj = JSON.parse(response);
+				document.getElementById("editthermostatnamevalidatecheck").value = obj[0].status;
+				if(obj[0].status == "N"){
+					document.getElementById("editthermostatdate").disabled = true;
+					document.getElementById("editthermostatnamewarning").style.display = 'block';
+					document.getElementById("editthermostatnamewarningicon").style.display = 'block';
+					document.getElementById("editthermostatnameerrorheader").className = 'form-group has-feedback has-warning';
+				}else{
+					document.getElementById("editthermostatnamesuccessicon").style.display = 'block';
+					document.getElementById("editthermostatnameerrorheader").className = 'form-group has-feedback has-success ';
+				}
+			}
+		}
+	}
+}
+
+
+function editcheckthermostatn(bool,response){
+	document.getElementById("editthermostatdate").disabled = false;
+	document.getElementById("editthermostatnerror").style.display = 'none';
+	document.getElementById("editthermostatnsuccessicon").style.display = 'none';
+	document.getElementById("editthermostatnwarningicon").style.display = 'none';
+	document.getElementById("editthermostatnwarning").style.display = 'none';
+	document.getElementById("editthermostatnerrorheader").className = 'form-group has-feedback';
+	
+	if(response.length > 0){
+		if(bool){
+			pagename = "thermostat_exists";
+			thermid = document.getElementById("editthermostatid").value;
+			flag = "E";
+			var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&thermid="+thermid+ "&flag="+flag+ "&thermostatname="+response;
+			ajax_request(true,pagename,data_parameters,editcheckthermostatn);
+		}else{
+			var obj = JSON.parse(response);
+			document.getElementById("editthermostatnvalidatecheck").value = obj[0].status;
+			if(obj[0].status == "N"){
+				document.getElementById("editthermostatnsuccessicon").style.display = 'block';
+				document.getElementById("editthermostatnerrorheader").className = 'form-group has-feedback has-success ';
+			}else{
+				document.getElementById("editthermostatdate").disabled = true;
+				document.getElementById("editthermostatnwarning").style.display = 'block';
+				document.getElementById("editthermostatnwarningicon").style.display = 'block';
+				document.getElementById("editthermostatnerrorheader").className = 'form-group has-feedback has-warning';
+			}
+		}
+	}
+}
+
+
+function hideshowdivthermostat(thermid,thermname,thermostat_id,locationname){
+	/*if(activeyn == "N")document.getElementById("locationactiveyn").checked = false;
+	else document.getElementById("locationactiveyn").checked = true;*/
+	
+	document.getElementById("editthermostatdiv").style.display = 'block';
+	document.getElementById("addthermostatdiv").style.display = 'none';
+	document.getElementById("editthermostatnerror").style.display = 'none';
+	document.getElementById("editthermostatnerrorheader").className = 'form-group has-feedback';
+	document.getElementById("editthermostatnameerror").style.display = 'none';
+	document.getElementById("editthermostatnamesuccessicon").style.display = 'none';
+	document.getElementById("editthermostatnamewarningicon").style.display = 'none';
+	document.getElementById("editthermostatnamewarning").style.display = 'none';
+	document.getElementById("editthermostatnameerrorheader").className = 'form-group has-feedback';
+	
+	document.getElementById("editthermostatn").value = thermname;
+	document.getElementById("editthermostatname").value = thermostat_id;
+	document.getElementById("editthermostatid").value = thermid;
+	document.getElementById("editthermostatidhidden").value = thermostat_id;
+	document.getElementById("editass_location_id").value = locationname;
+	
+}
+
+function exitthermostatdivhide(){
+	document.getElementById("editthermostatdiv").style.display = 'none';
+	document.getElementById("addthermostatdiv").style.display = 'block';
+}
+
+
+function searchthermostat(bool,response){
+	if(bool){
+		pagename = "get_thermostat";
+		var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&thermostatname="+response;
+		ajax_request(true,pagename,data_parameters,searchthermostat);
+	}else{
+		var obj = JSON.parse(response);
+		var str = "";
+		if(obj[0].status != "N"){
+			for(var i = 0,j = 1; i < obj.length; i++,j++){
+				str += '<tr><td>'+obj[i].thermostat_name+'</td><td>'+obj[i].location_name+'</td><td>'+obj[i].classification_name+'</td><td>'+obj[i].class_det_description+'</td><td>'+obj[i].username+'</td><td>'+obj[i].create_dt+'</td><td>&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-edit" style="cursor:pointer" title="Edit" onClick="hideshowdivthermostat(\''+obj[i].therm_id+'\',\''+obj[i].thermostat_name+'\',\''+obj[i].thermostat_id+'\',\''+obj[i].location_name+'\')"></span></td></tr>';	
+			}
+			document.getElementById("thermostatdataload").innerHTML = str;
+		}
+		else{
+			str = '<tr align="center"><td colspan="7">No Result Found</td></tr>';	
+			document.getElementById("thermostatdataload").innerHTML = str;
+		}
+	}
+}
+
+function editthermostatnamesave(bool,response){
+	document.getElementById("editthermostatnerror").style.display = 'none';
+	document.getElementById("editthermostatnameerror").style.display = 'none';
+	document.getElementById("editthermostatnerrorheader").className = 'form-group has-feedback';
+	document.getElementById("editthermostatnameerrorheader").className = 'form-group has-feedback';
+	
+	if(bool){
+		var thermostatname = document.getElementById("editthermostatn").value;
+		
+		if(response != "" && thermostatname != ""){
+			var locationid = document.getElementById("editass_location_id").value;
+			thermid = document.getElementById("editthermostatid").value;
+			var validatecheck = document.getElementById("editthermostatnamevalidatecheck").value;
+			var validatecheck1 = document.getElementById("editthermostatnvalidatecheck").value;
+			if(validatecheck.trim() != "N" && validatecheck1.trim() != "Y"){
+				pagename = "thermostat";
+				flag = "E";
+				thermactiveyn = "Y";
+				var data_parameters = "slocid="+slocid+ "&orgid="+orgid+ "&locid="+locationid+ "&thermostatname="+thermostatname+ "&flag="+flag+ "&id="+userid+ "&thermostatid="+response+ "&classificationid="+0+ "&classdetid="+0+ "&thermid="+thermid+ "&thermactiveyn="+thermactiveyn;
+				ajax_request(true,pagename,data_parameters,editthermostatnamesave);
+			}
+		}else{
+			if(response == ""){
+				document.getElementById("editthermostatnameerror").style.display = 'block';
+				document.getElementById("editthermostatnameerrorheader").className = 'form-group has-feedback has-error';
+			}
+			if(thermostatname == ""){
+				document.getElementById("editthermostatnerror").style.display = 'block';
+				document.getElementById("editthermostatnerrorheader").className = 'form-group has-feedback has-error';
+			}
+		}
+	}else{
+		$('#thermostatupdatesucess').modal({
+			keyboard: true 
+		});
+		document.getElementById("editthermostatdiv").style.display = 'none';
+		document.getElementById("addthermostatdiv").style.display = 'block';
+		loadthermstatdata(true,"ok");
+	}
+}
+
+</script>
+</head>
+<body>
+<div class="container">
+    <div class="row"><br/>
+    	<div id="addthermostatdiv1"> 
+        <div id="addthermostatdiv" class="col-sm-3" style="border:1px solid #CCC;">
+        	<h4><b>Add New Thermostat</b></h4><hr>
+            	<div id="thermostatalertsuccess" class="span4 pull-center" style="display:none;">
+        			<div class="alert alert-success fade">
+        			<strong>Success! </strong> Thermostat added successfully.
+    				</div>
+                </div>
+                
+                
+               	<div id="thermostatnerrorheader" class="form-group has-feedback">
+                <label for="inputError2">Thermostat Name</label>
+                     <input type="text" class="form-control" id="thermostatn" onKeyUp="checkthermostatn(true,this.value)">
+                     <input type="hidden" id="thermostatnvalidatecheck" \>
+                     <span id="thermostatnerror" style="display:none;" class="help-block">Please fill out this field</span>
+                     <span id="thermostatnsuccessicon" style="display:none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                     <span id="thermostatnwarningicon" style="display:none" class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+                     <span id="thermostatnwarning" style="display:none;" class="help-block">Thermostat name not valid.</span>
+				</div>
+                
+            	<div id="thermostatnameerrorheader" class="form-group has-feedback">
+                <label for="inputError2">Thermostat ID</label>
+                     <input type="text" class="form-control" id="thermostatname" onKeyUp="checkthermostatname(true,this.value)">
+                     <input type="hidden" id="thermostatnamevalidatecheck" \>
+                     <span id="thermostatnameerror" style="display:none;" class="help-block">Please fill out this field</span>
+                     <span id="thermostatnamesuccessicon" style="display:none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                     <span id="thermostatnamewarningicon" style="display:none" class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+                     <span id="thermostatnamewarning" style="display:none;" class="help-block">Thermostat ID not valid.</span>
+				</div>
+                
+                <div class="form-group has-feedback" id="locationheader1">
+                    <label for="inputError2">Location Name</label>
+                    <select id="ass_location_id" class="form-control select-box-drop">
+                        
+                    </select>
+                <span id="locationerror1" style="display:none;" class="help-block">Please select location</span>
+            	</div>
+				<button onClick="savethermostat(true,thermostatname.value)" type="button" id="thermostataddbutton" class="all-btn-custom btn-sm btn-block ">
+          			<span class="glyphicon glyphicon-plus"></span> ADD
+        		</button>
+         		<br />
+        </div>
+
+<!-- ===============Update Detail Success============-->
+<div id="thermostatupdatesucess" class="modal fade" style="margin-top:80px;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal-header-info" style="background-color:#343334; color:#FFF">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Success</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                <div class="modal-body">
+                    <div class="container">
+     					Thermostat updated successfully.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+                </form>
+            </div>
+        </div>
+</div>
+<!-- ===============Update Detail Success============-->  
+
+<!--  Edit Department  -->   
+		<div id="editthermostatdiv" class="col-sm-3" style="border:1px solid #CCC; display:none">
+        	<h4><b>Edit Thermostat</b></h4><hr>
+            	<div id="editthermostatalertsuccess" class="span4 pull-center" style="display:none;">
+        			<div class="alert alert-success fade">
+        			<strong>Success! </strong> Thermostat added successfully.
+    				</div>
+                </div>
+                
+                
+               	<div id="editthermostatnerrorheader" class="form-group has-feedback">
+                <label for="inputError2">Thermostat Name</label>
+                     <input type="text" class="form-control" id="editthermostatn" onKeyUp="editcheckthermostatn(true,this.value)">
+                     <input type="hidden" id="editthermostatnvalidatecheck" \>
+                     <span id="editthermostatnerror" style="display:none;" class="help-block">Please fill out this field</span>
+                     <span id="editthermostatnsuccessicon" style="display:none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                     <span id="editthermostatnwarningicon" style="display:none" class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+                     <span id="editthermostatnwarning" style="display:none;" class="help-block">Thermostat name not valid.</span>
+				</div>
+                
+            	<div id="editthermostatnameerrorheader" class="form-group has-feedback">
+                <label for="inputError2">Thermostat ID</label>
+                     <input type="text" class="form-control" id="editthermostatname" onKeyUp="editcheckthermostatname(true,this.value)">
+                     <input type="hidden" id="editthermostatnamevalidatecheck" \>
+                     <input type="hidden" id="editthermostatid" \>
+                     <input type="hidden" id="editthermostatidhidden" \>
+                     <span id="editthermostatnameerror" style="display:none;" class="help-block">Please fill out this field</span>
+                     <span id="editthermostatnamesuccessicon" style="display:none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                     <span id="editthermostatnamewarningicon" style="display:none" class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+                     <span id="editthermostatnamewarning" style="display:none;" class="help-block">Thermostat ID not valid.</span>
+				</div>
+                
+                <div class="form-group has-feedback" id="editlocationheader1">
+                    <label for="inputError2">Location Name</label>
+                    <select id="editass_location_id" class="form-control select-box-drop">
+                        
+                    </select>
+                <span id="editlocationerror1" style="display:none;" class="help-block">Please select location</span>
+            	</div>
+                <div class="form-group">  
+				<button  class="btn-exit" style="width:49%" onClick="exitthermostatdivhide()">Exit</button>
+                <button id="editthermostatdate" class="btn-adddetail" style="width:49%" onClick="editthermostatnamesave('true',editthermostatname.value)">Update</button>
+                </div>
+         		
+        </div>
+<!--  Edit Department  -->       
+ 
+        <div  id="loadthermostatdetaildata" class="col-sm-9">
+        <table class="table table-hover">
+           <thead>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>Thermostat List</h4>
+                        <div class="btn-group pull-right">
+                             <div class="form-group has-feedback">
+                                <input type="text" class="form-control" id="inputSuccess2" onKeyUp="searchthermostat(true,this.value)" placeholder="Enter Thermostat Name"/>
+                                <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              <tr>
+                 <th>Thermostat Name</th><th>Location Name</th><th>Classification</th><th>Classification Details</th><th>Modified By</th><th>Modified On</th><th>Action</th>
+              </tr>
+           </thead>
+           <tbody id="thermostatdataload">
+          		
+           </tbody>
+         </table>   
+        </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script>
+dropdownloactiondata(true,"ok");
+loadthermstatdata(true,"ok");
+</script>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app="">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Root</title>
+<link rel="icon" href="images/root2.png" />
+<link href='css/bootstrap.min.css' rel='stylesheet'>
+<link href='css/config.css' rel='stylesheet' />
+
+<script>
+var temp = "";
+var global_setup_menu = "";
+
+function loadsetuppage(id){
+	if(temp != ""){
+		document.getElementById(temp).className = '';
+	}
+	temp = id;
+	document.getElementById(id).className = 'active';
+	$("#setuppageload").load(id);
+}
+
+
+</script>
+</head>
+
+<body>
+<div ng-include="'header.html'"></div>
+<!-- Header -->  
+		<ul class="nav nav-tabs" style="cursor:pointer; margin-top:60px;">
+            <li id="schedule.html" onclick="loadsetuppage(this.id)"><a>Schedule</a></li>
+            <li id="location.html" onclick="loadsetuppage(this.id)"><a>Location</a></li>
+            <li id="thermostat.html" onclick="loadsetuppage(this.id)"><a>Thermostat</a></li>
+            <li id="user.html" onclick="loadsetuppage(this.id)"><a>User</a></li>
+        </ul>
+      
+
+<div id="setuppageload"></div>
+</body>
+<script>
+loadsetuppage('schedule.html')
+</script>
+</html>
